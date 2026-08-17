@@ -650,3 +650,23 @@ async def send_points_to_dit(user_to: int, user_id: int = Depends(get_user_id_by
     }
     await Peer(user_uuid=user_id).send_points(data=data, session=session)
     return True  # {"uuid_to": "150", "activities_id": 9, "description": "10 лет Вы с нами!"}
+
+
+@peer_router.post("/transaction")
+def transaction(user_id: int = Depends(get_user_id_by_session_id), data=Body(), session: AsyncSession = Depends(get_async_db)):
+    #утомбовать входные данные
+    msg = data["message"]
+    if msg is not None:
+        msg = f"Сообщение от пользователя:\n «{msg_to}» \n"
+    data = {
+        "user_from" : user_id,
+        "user_to" : int(data["user_to"]),
+        "message" msg: ,
+        "how_match" : int(data["how_match"])
+    }
+
+    #создать запись в табличке
+
+    #отправить письма
+    #отправителю
+    #получаетлю

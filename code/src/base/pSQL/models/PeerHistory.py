@@ -18,4 +18,3 @@ class PeerHistory(Base):
 
     user = relationship("User", back_populates="peerhistory")
     activeusers = relationship("ActiveUsers", back_populates="peerhistory")
-

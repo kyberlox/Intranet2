@@ -202,3 +202,5 @@ class MerchStoreModel:
         except Exception as e:
             await session.rollback()
             return LogsMaker().error_message(f"Ошибка в create_purchase при покупке мерча пользователем {self.user_id}, данные: {data}: {e}")
+    
+    

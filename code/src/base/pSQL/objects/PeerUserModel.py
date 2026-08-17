@@ -1078,3 +1078,114 @@ class PeerUserModel:
         except Exception as e:
             await session.rollback()
             return LogsMaker().error_message(f"Ошибка в remove_author_points при снятии баллов у пользователя {self.uuid} за статью {article_id}: {e}")
+
+    #посчитать банс пользователя быстро
+    async def get_balace(self, session, user_id):
+        from ..models.Roots import Roots
+        # Проверяем баланс пользователя
+        stmt_user = select(Roots).where(Roots.user_uuid == int(self.user_id))
+        result_user = await session.execute(stmt_user)
+        user = result_user.scalar_one_or_none()
+
+        if not user or user.user_points is None:
+            return 0
+        else:
+            return user.user_points
+    
+    async def set_new_balance(self, session, user_id, new_balance):
+        # Ищем пользователя
+        stmt = select(Roots).where(Roots.user_uuid == user_id)
+        result = await session.execute(stmt)
+        user = result.scalar_one_or_none()
+
+        if user:
+            # Обновляем существующую запись
+            user.user_points = new_balance
+        else:
+            # Создаём нового пользователя с заданным балансом
+            # (добавьте при необходимости другие обязательные поля)
+            new_user = Roots(user_uuid=user_id, user_points=new_balance)
+            session.add(new_user)
+
+        # Фиксируем изменения в БД
+        await session.commit()
+
+        return new_balance
+
+
+    async def transaction(self, session, data: dict, roots: dict):
+        try:
+            from .MerchStoreModel import MerchStoreModel
+            
+            uuid_from = int(data["user_from"])
+            uuid_to = int(data["user_to"])
+            activities_id = None
+            message = data["message"]
+            how_match = int(data["how_match"])
+            
+            # Проверяем существование отправителя
+            stmt_user = select(self.User).where(self.User.id == uuid_from, self.User.active == True)
+            result_user = await session.execute(stmt_user)
+            existing_user_from = result_user.scalar_one_or_none()
+            
+            if not existing_user_from:
+                return LogsMaker().warning_message(f"Отпрапвителя баллов с id = {uuid_from} не существует")
+            
+            # Проверяем существование получателя
+            stmt_user = select(self.User).where(self.User.id == uuid_to, self.User.active == True)
+            result_user = await session.execute(stmt_user)
+            existing_user_to = result_user.scalar_one_or_none()
+            
+            if not existing_user_to:
+                return LogsMaker().warning_message(f"Получателя баллов с id = {uuid_to} не существует")
+
+            user_balance = await self.get_balace(session, uuid_from)
+
+            if uuid_from == uuid_to:
+                return LogsMaker().warning_message(f"Пользователь с id = {uuid_from} пытается поставить баллы сам себе!")
+            elif user_balance < how_match:
+                return LogsMaker().warning_message(f"У пользователя с id = {uuid_from} не хватает баллов {how_match - user_balance} для перевода.")
+            else:
+                #создается запись в ActiveUsers
+                stmt_max = select(func.max(self.ActiveUsers.id))
+                result_max = await session.execute(stmt_max)
+                max_id = result_max.scalar() or 0
+                new_id = max_id + 1
+                
+                new_action = self.ActiveUsers(
+                    id=new_id,
+                    uuid_from=uuid_from,
+                    uuid_to=uuid_to,
+                    description="Перевод",
+                    activities_id=None,
+                    valid=1,
+                    date_time=datetime.now()
+                )
+                session.add(new_action)
+
+                #обноваить баланс в Roots
+                new_user_balance = user_balance - how_match
+                await self.set_new_balance(session, uuid_from, new_user_balance)
+                
+                msg_from = f"Перевод баллов на сумму - {how_match}. "
+
+                #создается запись в PeerHistory
+                add_history = self.PeerHistory(
+                    #для отправителя
+                    user_uuid=uuid_from,
+                    merch_info=msg_from,
+                    merch_coast=how_match,
+                    #для получателя
+                    user_to=uuid_to,
+                    active_info=msg_to,
+                    active_coast=message,
+                    active_id=new_id,
+                    #от души
+                    info_type='transaction',
+                    date_time=datetime.now()
+                )
+
+                session.add(add_history)
+                await session.commit()
+                return LogsMaker().info_message(f"Перевод от пользователя с id = {uuid_from} на сумму баллов = {how_match}, успешно отправлен пользователю с id = {uuid_to}")
+

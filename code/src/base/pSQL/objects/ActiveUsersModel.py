@@ -377,7 +377,6 @@ class ActiveUsersModel:
                         art_inf = await ArticleModel(id=int(row.description)).find_by_id(session=session)
                         description = f"Баллы за предложенную новость: {art_inf['name']}" if 'name' in art_inf else f"Баллы за предложенную новость: Новость удалена!" 
 
-
                         
                     activities.append({
                         "id_activeusers": row.id,
@@ -410,6 +409,42 @@ class ActiveUsersModel:
                     "activity_name": "Снятие баллов за покупку",
                     "cost": -merch.merch_coast
                 })
+            
+            # Получаем историю перводов
+            stmt_transaction = select(self.PeerHistory).where(
+                self.PeerHistory.user_uuid == int(self.uuid_to),
+                self.PeerHistory.info_type == 'transaction'
+            )
+            result_transaction = await session.execute(stmt_transaction)
+            transaction_history = result_transaction.scalars().all()
+
+            if not transaction_history:
+                sorted_result = sorted(activities, key=lambda x: x['date_time'], reverse=True)
+                return sorted_result
+            for transaction in transaction_history:
+                # понять отправитель или пеолучатель
+                your_id = 0
+                #ты - отправитель
+                if your_id == user_uuid:
+                    your_coast = -transaction.merch_coast
+                    another_user_id = transaction.user_uuid
+                    another_user_fio = f"Вы"
+                    message  = f""
+                else: #ты - получатель
+                    your_coast = transaction.merch_coast
+                    another_user_id = transaction
+                    another_user_fio = ""
+                    message = f""
+                activities.append({
+                    "id": transaction.id,
+                    "user_uuid": another_user_id,
+                    "fio_from": another_user_fio,
+                    "description": message,
+                    "date_time": merch.date_time,
+                    "activity_name": "Перевод",
+                    "cost": your_coast
+                })
+
             sorted_result = sorted(activities, key=lambda x: x['date_time'], reverse=True)
             return sorted_result
             

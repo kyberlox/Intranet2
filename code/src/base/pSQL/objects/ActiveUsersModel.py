@@ -446,12 +446,13 @@ class ActiveUsersModel:
                 your_id = self.uuid_to
                 print(your_id, transaction.user_uuid)
                 if your_id == transaction.user_uuid:
+                    print(your_id, transaction.user_uuid)
                     your_coast = -transaction.merch_coast
                     print(your_coast)
-                #     another_user_id = transaction.user_to
-                #     user_fio = await self.get_user_fio_by_id(another_user_id)
-                #     another_user_fio = f"Вы"
-                #     message  = f"Перевод баллов на сумму {transaction.merch_coast} \n Получатель  - {user_fio}"
+                    another_user_id = transaction.user_to
+                    user_fio = await self.get_user_fio_by_id(another_user_id)
+                    another_user_fio = f"Вы"
+                    message  = f"Перевод баллов на сумму {transaction.merch_coast} \n Получатель  - {user_fio}"
                 # else: #ты - получатель
                 #     your_coast = transaction.active_coast
                 #     another_user_id = transaction.user_uuid

@@ -1140,11 +1140,12 @@ class PeerUserModel:
             if not existing_user_to:
                 return LogsMaker().warning_message(f"Получателя баллов с id = {uuid_to} не существует")
 
-            user_balance = await self.get_balace(session, uuid_from)
+            user_from_balance = await self.get_balace(session, uuid_from)
+            user_to_balance = await self.get_balace(session, uuid_to)
 
             if uuid_from == uuid_to:
                 return LogsMaker().warning_message(f"Пользователь с id = {uuid_from} пытается поставить баллы сам себе!")
-            elif user_balance < how_match:
+            elif user_from_balance < how_match:
                 return LogsMaker().warning_message(f"У пользователя с id = {uuid_from} не хватает баллов {how_match - user_balance} для перевода.")
             else:
                 #создается запись в ActiveUsers
@@ -1164,9 +1165,16 @@ class PeerUserModel:
                 # )
                 # session.add(new_action)
 
-                #обноваить баланс в Roots
-                new_user_balance = user_balance - how_match
-                await self.set_new_balance(session, uuid_from, new_user_balance)
+                #обноваить баланс в Roots у отправителя
+                new_user_from_balance = user_from_balance - how_match
+                await self.set_new_balance(session, uuid_from, new_user_from_balance)
+                
+                msg_from = f"Перевод баллов на сумму - {how_match}. "
+                msg_to = f"Перевод баллов на сумму - {how_match}. "
+
+                #обноваить баланс в Roots у получателя
+                new_user_to_balance = user_to_balance + how_match
+                await self.set_new_balance(session, uuid_to, new_user_to_balance)
                 
                 msg_from = f"Перевод баллов на сумму - {how_match}. "
                 msg_to = f"Перевод баллов на сумму - {how_match}. "

@@ -460,7 +460,7 @@ class ActiveUsersModel:
                     another_user_fio = await self.get_user_fio_by_id(session, another_user_id)
                     message = f"Перевод бвллов на сумму {transaction.merch_coast} \n Отправитель  - {another_user_fio}" + "\n" + transaction.active_info
 
-                activities.append({
+                transaction_data = {
                     "id": transaction.id,
                     "user_uuid": another_user_id,
                     "fio_from": another_user_fio,
@@ -468,7 +468,9 @@ class ActiveUsersModel:
                     "date_time": merch.date_time,
                     "activity_name": "Перевод",
                     "cost": your_coast
-                })
+                }
+                print(transaction_data)
+                activities.append(transaction_data)
 
             sorted_result = sorted(activities, key=lambda x: x['date_time'], reverse=True)
             return sorted_result

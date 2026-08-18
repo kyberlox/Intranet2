@@ -169,7 +169,7 @@ class Peer:
 
     """"""
 
-    async def user_history(self, session, user_id):
+    async def user_history(self, session):
         self.ActiveUsersModel.uuid_to = self.user_uuid
         return await self.ActiveUsersModel.user_history(session=session)
 

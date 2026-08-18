@@ -661,7 +661,7 @@ def transaction(user_id: int = Depends(get_user_id_by_session_id), data=Body(), 
     data = {
         "user_from" : user_id,
         "user_to" : int(data["user_to"]),
-        "message" msg,
+        "message": msg,
         "how_match" : int(data["how_match"])
     }
 

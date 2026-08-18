@@ -441,6 +441,7 @@ class ActiveUsersModel:
 
             if not transaction_history:
                 sorted_result = sorted(activities, key=lambda x: x['date_time'], reverse=True)
+                print("нет транзакций")
                 return sorted_result
 
             for transaction in transaction_history:

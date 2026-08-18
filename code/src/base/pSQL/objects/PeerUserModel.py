@@ -1185,6 +1185,9 @@ class PeerUserModel:
                     date_time=datetime.now()
                 )
 
-            session.add(add_history)
-            await session.commit()
-            return LogsMaker().info_message(f"Перевод от пользователя с id = {uuid_from} на сумму баллов = {how_match}, успешно отправлен пользователю с id = {uuid_to}")
+                session.add(add_history)
+                await session.commit()
+                return LogsMaker().info_message(f"Перевод от пользователя с id = {uuid_from} на сумму баллов = {how_match}, успешно отправлен пользователю с id = {uuid_to}")
+        except Exception as e:
+            await session.rollback()
+            return LogsMaker().error_message(f"Ошибка в transaction при переводе баллов у пользователя {self.uuid}: {e}")

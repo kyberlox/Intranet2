@@ -431,12 +431,12 @@ class ActiveUsersModel:
             sorted_result = sorted(activities, key=lambda x: x['date_time'], reverse=True)
             
             # Получаем историю перводов
-            # stmt_transaction = select(self.PeerHistory).where(
-            #     self.PeerHistory.user_uuid == int(self.uuid_to),
-            #     self.PeerHistory.info_type == 'transaction'
-            # )
-            # result_transaction = await session.execute(stmt_transaction)
-            # transaction_history = result_transaction.scalars().all()
+            stmt_transaction = select(self.PeerHistory).where(
+                self.PeerHistory.user_uuid == int(self.uuid_to),
+                self.PeerHistory.info_type == 'transaction'
+            )
+            result_transaction = await session.execute(stmt_transaction)
+            transaction_history = result_transaction.scalars().all()
 
             # if not transaction_history:
             #     sorted_result = sorted(activities, key=lambda x: x['date_time'], reverse=True)

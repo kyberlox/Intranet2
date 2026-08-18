@@ -415,7 +415,6 @@ class ActiveUsersModel:
             result_merch = await session.execute(stmt_merch)
             merch_history = result_merch.scalars().all()
             if merch_history:
-                print("твой список не пуст")
                 for merch in merch_history:
                     activities.append({
                         "id": merch.id,
@@ -426,11 +425,8 @@ class ActiveUsersModel:
                         "activity_name": "Снятие баллов за покупку",
                         "cost": -merch.merch_coast
                     })
-            else:
-                print("нет покупок")
             
             # Получаем историю перводов
-            print(self.uuid_to)
             stmt_transaction = select(self.PeerHistory).where(
                 or_(
                     self.PeerHistory.user_uuid == int(self.uuid_to),
@@ -468,7 +464,7 @@ class ActiveUsersModel:
                     "user_uuid": another_user_id,
                     "fio_from": another_user_fio,
                     "description": message,
-                    "date_time": merch.date_time,
+                    "date_time": transaction.date_time,
                     "activity_name": "Перевод",
                     "cost": your_coast
                 }

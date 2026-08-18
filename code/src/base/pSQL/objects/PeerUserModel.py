@@ -1093,6 +1093,7 @@ class PeerUserModel:
             return user.user_points
     
     async def set_new_balance(self, session, user_id, new_balance):
+        from ..models.Roots import Roots
         # Ищем пользователя
         stmt = select(Roots).where(Roots.user_uuid == user_id)
         result = await session.execute(stmt)

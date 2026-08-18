@@ -169,9 +169,9 @@ class Peer:
 
     """"""
 
-    async def user_history(self, session):
+    async def user_history(self, session, user_id):
         self.ActiveUsersModel.uuid_to = self.user_uuid
-        return await self.ActiveUsersModel.user_history(session=session)
+        return await self.ActiveUsersModel.user_history(session=session, user_id=user_id)
 
     """"""
 
@@ -516,7 +516,7 @@ async def user_history(user_id: int = Depends(get_user_id_by_session_id), sessio
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Not authenticated"
         )
-    return await Peer(user_uuid=user_id).user_history(session=session)
+    return await Peer(user_uuid=user_id).user_history(session=session, user_id=user_id)
 
 
 """"""

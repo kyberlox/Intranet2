@@ -322,7 +322,24 @@ class ActiveUsersModel:
         except Exception as e:
             return LogsMaker().error_message(f"Ошибка в new_a_week при получении недельной статистики для пользователя {self.uuid_to}: {e}")
 
-    async def user_history(self, session):
+    async def get_user_fio_by_id(self, user_id):
+        # Получаем информацию о пользователе
+        stmt_user = select(
+            self.User.name, 
+            self.User.second_name, 
+            self.User.last_name
+        ).where(self.User.id == user_id)
+        
+        result_user = await session.execute(stmt_user)
+        user_info = result_user.first()
+        
+        user_fio = None
+        if user_info:
+            user_fio = f"{user_info.last_name or ''} {user_info.name or ''} {user_info.second_name or ''}".strip()
+        
+        return user_fio
+
+    async def user_history(self, session, user_id):
         
         YEARS_ID = [7, 8, 9, 10, 11, 12, 13, 14, 15] # менять значеняи к годам если поменялись айдишники
         try:
@@ -423,18 +440,19 @@ class ActiveUsersModel:
                 return sorted_result
             for transaction in transaction_history:
                 # понять отправитель или пеолучатель
-                your_id = 0
+                your_id = user_id
                 #ты - отправитель
                 if your_id == user_uuid:
                     your_coast = -transaction.merch_coast
-                    another_user_id = transaction.user_uuid
+                    another_user_id = transaction.user_to
+                    user_fio = await self.get_user_fio_by_id(another_user_id)
                     another_user_fio = f"Вы"
-                    message  = f""
+                    message  = f"Перевод баллов на сумму {transaction.merch_coast} \n Получатель  - {user_fio}"
                 else: #ты - получатель
-                    your_coast = transaction.merch_coast
-                    another_user_id = transaction
-                    another_user_fio = ""
-                    message = f""
+                    your_coast = transaction.active_coast
+                    another_user_id = transaction.user_uuid
+                    another_user_fio = await self.get_user_fio_by_id(another_user_id)
+                    message = f"Перевод бвллов на сумму {transaction.merch_coast} \n Отправитель  - {user_fio}" + transaction.description
                 activities.append({
                     "id": transaction.id,
                     "user_uuid": another_user_id,

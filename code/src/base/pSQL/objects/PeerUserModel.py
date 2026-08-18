@@ -1179,8 +1179,8 @@ class PeerUserModel:
                     merch_coast=how_match,
                     #для получателя
                     user_to=uuid_to,
-                    active_info=msg_to,
-                    active_coast=message,
+                    active_info=message,
+                    active_coast=how_match,
                     # active_id=new_id,
                     #от души
                     info_type='transaction',

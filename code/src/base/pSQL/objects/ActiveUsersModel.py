@@ -460,7 +460,7 @@ class ActiveUsersModel:
                     msg = ""
                     if transaction.active_info:
                         msg = transaction.active_info
-                    message = f"Перевод бвллов на сумму {transaction.merch_coast} \n Отправитель  - {another_user_fio}" + "\n" + msg
+                    message = f"Перевод баллов на сумму {transaction.merch_coast} \n Отправитель  - {another_user_fio}" + "\n" + msg
 
                 transaction_data = {
                     "id": transaction.id,

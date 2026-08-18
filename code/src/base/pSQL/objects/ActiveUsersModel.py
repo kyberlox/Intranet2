@@ -428,6 +428,8 @@ class ActiveUsersModel:
                     "cost": -merch.merch_coast
                 })
             
+            sorted_result = sorted(activities, key=lambda x: x['date_time'], reverse=True)
+            
             # Получаем историю перводов
             stmt_transaction = select(self.PeerHistory).where(
                 self.PeerHistory.user_uuid == int(self.uuid_to),
@@ -436,31 +438,31 @@ class ActiveUsersModel:
             result_transaction = await session.execute(stmt_transaction)
             transaction_history = result_transaction.scalars().all()
 
-    #         if not transaction_history:
-    #             sorted_result = sorted(activities, key=lambda x: x['date_time'], reverse=True)
-    #             return sorted_result
-    #         for transaction in transaction_history:
-    #             your_id = self.uuid_to
-    #             if your_id == transaction.user_uuid:
-    #                 your_coast = -transaction.merch_coast
-    #                 another_user_id = transaction.user_to
-    #                 user_fio = await self.get_user_fio_by_id(another_user_id)
-    #                 another_user_fio = f"Вы"
-    #                 message  = f"Перевод баллов на сумму {transaction.merch_coast} \n Получатель  - {user_fio}"
-    #             else: #ты - получатель
-    #                 your_coast = transaction.active_coast
-    #                 another_user_id = transaction.user_uuid
-    #                 another_user_fio = await self.get_user_fio_by_id(another_user_id)
-    #                 message = f"Перевод бвллов на сумму {transaction.merch_coast} \n Отправитель  - {user_fio}" + transaction.description
-    #             activities.append({
-    #                 "id": transaction.id,
-    #                 "user_uuid": another_user_id,
-    #                 "fio_from": another_user_fio,
-    #                 "description": message,
-    #                 "date_time": merch.date_time,
-    #                 "activity_name": "Перевод",
-    #                 "cost": your_coast
-    #             })
+            if not transaction_history:
+                sorted_result = sorted(activities, key=lambda x: x['date_time'], reverse=True)
+                return sorted_result
+            for transaction in transaction_history:
+                your_id = self.uuid_to
+                if your_id == transaction.user_uuid:
+                    your_coast = -transaction.merch_coast
+                    another_user_id = transaction.user_to
+                    user_fio = await self.get_user_fio_by_id(another_user_id)
+                    another_user_fio = f"Вы"
+                    message  = f"Перевод баллов на сумму {transaction.merch_coast} \n Получатель  - {user_fio}"
+                else: #ты - получатель
+                    your_coast = transaction.active_coast
+                    another_user_id = transaction.user_uuid
+                    another_user_fio = await self.get_user_fio_by_id(another_user_id)
+                    message = f"Перевод бвллов на сумму {transaction.merch_coast} \n Отправитель  - {user_fio}" + transaction.description
+                activities.append({
+                    "id": transaction.id,
+                    "user_uuid": another_user_id,
+                    "fio_from": another_user_fio,
+                    "description": message,
+                    "date_time": merch.date_time,
+                    "activity_name": "Перевод",
+                    "cost": your_coast
+                })
 
             sorted_result = sorted(activities, key=lambda x: x['date_time'], reverse=True)
             return sorted_result

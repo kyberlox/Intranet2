@@ -339,7 +339,7 @@ class ActiveUsersModel:
         
         return user_fio
 
-    async def user_history(self, session, user_id):
+    async def user_history(self, session):
         
         YEARS_ID = [7, 8, 9, 10, 11, 12, 13, 14, 15] # менять значеняи к годам если поменялись айдишники
         try:
@@ -439,7 +439,7 @@ class ActiveUsersModel:
                 sorted_result = sorted(activities, key=lambda x: x['date_time'], reverse=True)
                 return sorted_result
             for transaction in transaction_history:
-                your_id = user_id
+                your_id = self.uuid_to
                 if your_id == transaction.user_uuid:
                     your_coast = -transaction.merch_coast
                     another_user_id = transaction.user_to

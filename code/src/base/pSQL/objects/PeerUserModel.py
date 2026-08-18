@@ -1113,7 +1113,7 @@ class PeerUserModel:
         return new_balance
 
 
-    async def transaction(self, session, data: dict, roots: dict):
+    async def transaction(self, session, data: dict):
         try:
             from .MerchStoreModel import MerchStoreModel
             

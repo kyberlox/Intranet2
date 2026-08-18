@@ -665,8 +665,4 @@ def transaction(user_id: int = Depends(get_user_id_by_session_id), data=Body(), 
         "how_match" : int(data["how_match"])
     }
 
-    #создать запись в табличке
-
-    #отправить письма
-    #отправителю
-    #получаетлю
+    await Peer(user_uuid=user_id).transaction(session=session, data=data)

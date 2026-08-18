@@ -664,6 +664,5 @@ async def transaction(user_id: int = Depends(get_user_id_by_session_id), data=Bo
         "message": msg,
         "how_match" : int(data["how_match"])
     }
-
-    await self.PeerUserModel(user_uuid=user_id).transaction(session=session, data=data)
-    return True
+    self.PeerUserModel.uuid = user_id
+    return await self.PeerUserModel.transaction(session=session, data=data) 

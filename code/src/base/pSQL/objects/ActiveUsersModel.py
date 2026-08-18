@@ -439,9 +439,7 @@ class ActiveUsersModel:
                 sorted_result = sorted(activities, key=lambda x: x['date_time'], reverse=True)
                 return sorted_result
             for transaction in transaction_history:
-                # понять отправитель или пеолучатель
                 your_id = user_id
-                #ты - отправитель
                 if your_id == transaction.user_uuid:
                     your_coast = -transaction.merch_coast
                     another_user_id = transaction.user_to

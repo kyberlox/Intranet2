@@ -1148,21 +1148,21 @@ class PeerUserModel:
                 return LogsMaker().warning_message(f"У пользователя с id = {uuid_from} не хватает баллов {how_match - user_balance} для перевода.")
             else:
                 #создается запись в ActiveUsers
-                stmt_max = select(func.max(self.ActiveUsers.id))
-                result_max = await session.execute(stmt_max)
-                max_id = result_max.scalar() or 0
-                new_id = max_id + 1
+                # stmt_max = select(func.max(self.ActiveUsers.id))
+                # result_max = await session.execute(stmt_max)
+                # max_id = result_max.scalar() or 0
+                # new_id = max_id + 1
                 
-                new_action = self.ActiveUsers(
-                    id=new_id,
-                    uuid_from=uuid_from,
-                    uuid_to=uuid_to,
-                    description="Перевод",
-                    activities_id=None,
-                    valid=1,
-                    date_time=datetime.now()
-                )
-                session.add(new_action)
+                # new_action = self.ActiveUsers(
+                #     id=new_id,
+                #     uuid_from=uuid_from,
+                #     uuid_to=uuid_to,
+                #     description="Перевод",
+                #     activities_id=None,
+                #     valid=1,
+                #     date_time=datetime.now()
+                # )
+                # session.add(new_action)
 
                 #обноваить баланс в Roots
                 new_user_balance = user_balance - how_match

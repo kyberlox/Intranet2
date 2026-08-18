@@ -447,14 +447,15 @@ class ActiveUsersModel:
                     your_coast = -transaction.merch_coast
                     another_user_id = transaction.user_to
 
-                    user_fio = await self.get_user_fio_by_id(session, another_user_id)
-                    message  = f"Перевод баллов на сумму {transaction.merch_coast} \n Получатель  - {user_fio}"
+                    another_user_fio = await self.get_user_fio_by_id(session, another_user_id)
+                    message  = f"Перевод баллов на сумму {transaction.merch_coast} \n Получатель  - {another_user_fio}"
+
                 else: #ты - получатель
                     your_coast = transaction.active_coast
                     another_user_id = transaction.user_uuid
 
                     another_user_fio = await self.get_user_fio_by_id(session, another_user_id)
-                    message = f"Перевод бвллов на сумму {transaction.merch_coast} \n Отправитель  - {user_fio}" + transaction.description
+                    message = f"Перевод бвллов на сумму {transaction.merch_coast} \n Отправитель  - {another_user_fio}" + transaction.description
 
                 activities.append({
                     "id": transaction.id,

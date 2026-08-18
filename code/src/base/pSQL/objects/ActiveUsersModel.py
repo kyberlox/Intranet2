@@ -414,7 +414,7 @@ class ActiveUsersModel:
             )
             result_merch = await session.execute(stmt_merch)
             merch_history = result_merch.scalars().all()
-            if merch_history != []:
+            if len(merch_history) > 0:
                 for merch in merch_history:
                     activities.append({
                         "id": merch.id,

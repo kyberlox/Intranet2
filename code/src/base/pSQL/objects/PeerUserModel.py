@@ -1181,7 +1181,7 @@ class PeerUserModel:
                     user_to=uuid_to,
                     active_info=msg_to,
                     active_coast=message,
-                    active_id=new_id,
+                    # active_id=new_id,
                     #от души
                     info_type='transaction',
                     date_time=datetime.now()

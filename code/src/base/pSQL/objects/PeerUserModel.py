@@ -1083,7 +1083,7 @@ class PeerUserModel:
     async def get_balace(self, session, user_id):
         from ..models.Roots import Roots
         # Проверяем баланс пользователя
-        stmt_user = select(Roots).where(Roots.user_uuid == int(self.user_id))
+        stmt_user = select(Roots).where(Roots.user_uuid == int(user_id))
         result_user = await session.execute(stmt_user)
         user = result_user.scalar_one_or_none()
 

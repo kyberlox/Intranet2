@@ -469,8 +469,8 @@ class ActiveUsersModel:
                 #     "activity_name": "Перевод",
                 #     "cost": your_coast
                 # })
-            seesion.close()
-            sorted_result = sorted(activities, key=lambda x: x['date_time'], reverse=True)
+            # seesion.close()
+            # sorted_result = sorted(activities, key=lambda x: x['date_time'], reverse=True)
             return sorted_result
             
         except Exception as e:

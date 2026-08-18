@@ -436,9 +436,9 @@ class ActiveUsersModel:
             result_transaction = await session.execute(stmt_transaction)
             transaction_history = result_transaction.scalars().all()
 
-            # if not transaction_history:
-            #     sorted_result = sorted(activities, key=lambda x: x['date_time'], reverse=True)
-            #     return sorted_result
+            if not transaction_history:
+                sorted_result = sorted(activities, key=lambda x: x['date_time'], reverse=True)
+                return sorted_result
 
             # for transaction in transaction_history:
             #     your_id = self.uuid_to

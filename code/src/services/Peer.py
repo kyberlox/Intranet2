@@ -657,7 +657,7 @@ def transaction(user_id: int = Depends(get_user_id_by_session_id), data=Body(), 
     #утомбовать входные данные
     msg = data["message"]
     if msg is not None:
-        msg = f"Сообщение от пользователя:\n «{msg_to}» \n"
+        msg = f"Сообщение от пользователя:\n «{msg}» \n"
     data = {
         "user_from" : user_id,
         "user_to" : int(data["user_to"]),

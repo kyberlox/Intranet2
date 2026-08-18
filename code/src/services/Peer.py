@@ -298,6 +298,10 @@ class Peer:
         self.PeerUserModel.uuid = self.user_uuid
         return await self.PeerUserModel.remove_author_points(session=session, article_id=article_id)
 
+    async def transaction(self, session, data):
+        self.PeerUserModel.uuid = self.user_uuid
+        return await self.PeerUserModel.transaction(session=session, data=data) 
+
 async def get_uuid_from_request(request, session):
     user_id = None
     token = request.cookies.get("user_id")
@@ -664,5 +668,4 @@ async def transaction(user_id: int = Depends(get_user_id_by_session_id), data=Bo
         "message": msg,
         "how_match" : int(data["how_match"])
     }
-    self.PeerUserModel.uuid = user_id
-    return await self.PeerUserModel.transaction(session=session, data=data) 
+    return await Peer(user_uuid=user_id).transaction(session=session, data=data) 

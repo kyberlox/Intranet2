@@ -339,7 +339,7 @@ class ActiveUsersModel:
         
         return user_fio
 
-    async def user_history(self, session):
+        async def user_history(self, session):
         
         YEARS_ID = [7, 8, 9, 10, 11, 12, 13, 14, 15] # менять значеняи к годам если поменялись айдишники
         try:
@@ -394,6 +394,7 @@ class ActiveUsersModel:
                         art_inf = await ArticleModel(id=int(row.description)).find_by_id(session=session)
                         description = f"Баллы за предложенную новость: {art_inf['name']}" if 'name' in art_inf else f"Баллы за предложенную новость: Новость удалена!" 
 
+
                         
                     activities.append({
                         "id_activeusers": row.id,
@@ -426,43 +427,136 @@ class ActiveUsersModel:
                     "activity_name": "Снятие баллов за покупку",
                     "cost": -merch.merch_coast
                 })
-            
-            # Получаем историю перводов
-            stmt_transaction = select(self.PeerHistory).where(
-                self.PeerHistory.user_uuid == int(self.uuid_to),
-                self.PeerHistory.info_type == 'transaction'
-            )
-            result_transaction = await session.execute(stmt_transaction)
-            transaction_history = result_transaction.scalars().all()
-
-            if not transaction_history:
-                sorted_result = sorted(activities, key=lambda x: x['date_time'], reverse=True)
-                return sorted_result
-            for transaction in transaction_history:
-                your_id = self.uuid_to
-                if your_id == transaction.user_uuid:
-                    your_coast = -transaction.merch_coast
-                    another_user_id = transaction.user_to
-                    user_fio = await self.get_user_fio_by_id(another_user_id)
-                    another_user_fio = f"Вы"
-                    message  = f"Перевод баллов на сумму {transaction.merch_coast} \n Получатель  - {user_fio}"
-                else: #ты - получатель
-                    your_coast = transaction.active_coast
-                    another_user_id = transaction.user_uuid
-                    another_user_fio = await self.get_user_fio_by_id(another_user_id)
-                    message = f"Перевод бвллов на сумму {transaction.merch_coast} \n Отправитель  - {user_fio}" + transaction.description
-                activities.append({
-                    "id": transaction.id,
-                    "user_uuid": another_user_id,
-                    "fio_from": another_user_fio,
-                    "description": message,
-                    "date_time": merch.date_time,
-                    "activity_name": "Перевод",
-                    "cost": your_coast
-                })
-
             sorted_result = sorted(activities, key=lambda x: x['date_time'], reverse=True)
             return sorted_result
             
         except Exception as e:
             return LogsMaker().error_message(f"Ошибка в user_history при получении полной истории для пользователя {self.uuid_to}: {e}")
+
+    # async def user_history(self, session):
+        
+    #     YEARS_ID = [7, 8, 9, 10, 11, 12, 13, 14, 15] # менять значеняи к годам если поменялись айдишники
+    #     try:
+    #         # Получаем активность пользователя
+    #         stmt_activities = select(
+    #             self.ActiveUsers.id,
+    #             self.ActiveUsers.uuid_from,
+    #             self.ActiveUsers.description,
+    #             self.ActiveUsers.date_time,
+    #             self.Activities.name,
+    #             self.Activities.coast,
+    #             self.Activities.id,
+    #         ).join(self.Activities).where(
+    #             self.ActiveUsers.uuid_to == int(self.uuid_to),
+    #             self.ActiveUsers.valid == 1
+    #         )
+            
+    #         result_activities = await session.execute(stmt_activities)
+    #         results = result_activities.all()
+            
+    #         activities = []
+    #         if results:
+    #             for row in results:
+    #                 # Получаем информацию о пользователе
+    #                 stmt_user = select(
+    #                     self.User.name, 
+    #                     self.User.second_name, 
+    #                     self.User.last_name
+    #                 ).where(self.User.id == row.uuid_from)
+                    
+    #                 result_user = await session.execute(stmt_user)
+    #                 user_info = result_user.first()
+                    
+    #                 user_fio = ""
+    #                 if user_info:
+    #                     user_fio = f"{user_info.last_name or ''} {user_info.name or ''} {user_info.second_name or ''}".strip()
+                    
+    #                 activity_name = row.name
+    #                 description = row.description
+
+    #                 if row[-1] == 6:
+    #                     description = f"Лучший сотрудник {row.description} года"
+    #                 elif row[-1] == 2:
+    #                     description = f"Почетная грамота в конкурсе 'Лучший сотрудник {row.description} года'"
+    #                 elif row[-1] in YEARS_ID:
+    #                     activity_name = f"Награда за '{row.name}'"
+    #                 elif row[-1] == 4:
+    #                     activity_name = f"Баллы за идею"
+    #                     description = f"Идея №{row.description}"
+    #                 elif row[-1] == 5:
+    #                     from .ArticleModel import ArticleModel
+    #                     art_inf = await ArticleModel(id=int(row.description)).find_by_id(session=session)
+    #                     description = f"Баллы за предложенную новость: {art_inf['name']}" if 'name' in art_inf else f"Баллы за предложенную новость: Новость удалена!" 
+
+                        
+    #                 activities.append({
+    #                     "id_activeusers": row.id,
+    #                     "uuid_from": row.uuid_from,
+    #                     "fio_from": user_fio,
+    #                     "description": description,
+    #                     "date_time": row.date_time,
+    #                     "activity_name": activity_name,
+    #                     "cost": row.coast,
+    #                     "id_activites": row[-1]
+    #                 })
+            
+    #         # Получаем историю мерча
+    #         stmt_merch = select(self.PeerHistory).where(
+    #             self.PeerHistory.user_uuid == int(self.uuid_to),
+    #             self.PeerHistory.info_type == 'merch'
+    #         )
+    #         result_merch = await session.execute(stmt_merch)
+    #         merch_history = result_merch.scalars().all()
+    #         if not merch_history:
+    #             sorted_result = sorted(activities, key=lambda x: x['date_time'], reverse=True)
+    #             return sorted_result
+    #         for merch in merch_history:
+    #             activities.append({
+    #                 "id": merch.id,
+    #                 "user_uuid": merch.user_uuid,
+    #                 "fio_from": "Магазин мерча",
+    #                 "description": merch.merch_info,
+    #                 "date_time": merch.date_time,
+    #                 "activity_name": "Снятие баллов за покупку",
+    #                 "cost": -merch.merch_coast
+    #             })
+            
+    #         # Получаем историю перводов
+    #         stmt_transaction = select(self.PeerHistory).where(
+    #             self.PeerHistory.user_uuid == int(self.uuid_to),
+    #             self.PeerHistory.info_type == 'transaction'
+    #         )
+    #         result_transaction = await session.execute(stmt_transaction)
+    #         transaction_history = result_transaction.scalars().all()
+
+    #         if not transaction_history:
+    #             sorted_result = sorted(activities, key=lambda x: x['date_time'], reverse=True)
+    #             return sorted_result
+    #         for transaction in transaction_history:
+    #             your_id = self.uuid_to
+    #             if your_id == transaction.user_uuid:
+    #                 your_coast = -transaction.merch_coast
+    #                 another_user_id = transaction.user_to
+    #                 user_fio = await self.get_user_fio_by_id(another_user_id)
+    #                 another_user_fio = f"Вы"
+    #                 message  = f"Перевод баллов на сумму {transaction.merch_coast} \n Получатель  - {user_fio}"
+    #             else: #ты - получатель
+    #                 your_coast = transaction.active_coast
+    #                 another_user_id = transaction.user_uuid
+    #                 another_user_fio = await self.get_user_fio_by_id(another_user_id)
+    #                 message = f"Перевод бвллов на сумму {transaction.merch_coast} \n Отправитель  - {user_fio}" + transaction.description
+    #             activities.append({
+    #                 "id": transaction.id,
+    #                 "user_uuid": another_user_id,
+    #                 "fio_from": another_user_fio,
+    #                 "description": message,
+    #                 "date_time": merch.date_time,
+    #                 "activity_name": "Перевод",
+    #                 "cost": your_coast
+    #             })
+
+    #         sorted_result = sorted(activities, key=lambda x: x['date_time'], reverse=True)
+    #         return sorted_result
+            
+    #     except Exception as e:
+    #         return LogsMaker().error_message(f"Ошибка в user_history при получении полной истории для пользователя {self.uuid_to}: {e}")

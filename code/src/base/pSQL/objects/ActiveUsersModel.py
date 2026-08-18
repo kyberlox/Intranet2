@@ -322,7 +322,7 @@ class ActiveUsersModel:
         except Exception as e:
             return LogsMaker().error_message(f"Ошибка в new_a_week при получении недельной статистики для пользователя {self.uuid_to}: {e}")
 
-    async def get_user_fio_by_id(self, user_id):
+    async def get_user_fio_by_id(self, session, user_id):
         # Получаем информацию о пользователе
         stmt_user = select(
             self.User.name, 
@@ -444,29 +444,27 @@ class ActiveUsersModel:
                 your_id = self.uuid_to
                 print(your_id, transaction.user_uuid)
                 if int(your_id) == int(transaction.user_uuid):
-                    print(your_id, transaction.user_uuid)
-                    # your_coast = -transaction.merch_coast
-                    # another_user_id = transaction.user_to
-                    # user_fio = await self.get_user_fio_by_id(another_user_id)
-                    # another_user_fio = f"Вы"
-                    # message  = f"Перевод баллов на сумму {transaction.merch_coast} \n Получатель  - {user_fio}"
+                    your_coast = -transaction.merch_coast
+                    another_user_id = transaction.user_to
 
-                    # print(your_coast, another_user_id, user_fio, another_user_fio, message)
-                # else: #ты - получатель
-                #     your_coast = transaction.active_coast
-                #     another_user_id = transaction.user_uuid
-                #     another_user_fio = await self.get_user_fio_by_id(another_user_id)
-                #     message = f"Перевод бвллов на сумму {transaction.merch_coast} \n Отправитель  - {user_fio}" + transaction.description
+                    user_fio = await self.get_user_fio_by_id(session, another_user_id)
+                    message  = f"Перевод баллов на сумму {transaction.merch_coast} \n Получатель  - {user_fio}"
+                else: #ты - получатель
+                    your_coast = transaction.active_coast
+                    another_user_id = transaction.user_uuid
 
-                # activities.append({
-                #     "id": transaction.id,
-                #     "user_uuid": another_user_id,
-                #     "fio_from": another_user_fio,
-                #     "description": message,
-                #     "date_time": merch.date_time,
-                #     "activity_name": "Перевод",
-                #     "cost": your_coast
-                # })
+                    another_user_fio = await self.get_user_fio_by_id(session, another_user_id)
+                    message = f"Перевод бвллов на сумму {transaction.merch_coast} \n Отправитель  - {user_fio}" + transaction.description
+
+                activities.append({
+                    "id": transaction.id,
+                    "user_uuid": another_user_id,
+                    "fio_from": another_user_fio,
+                    "description": message,
+                    "date_time": merch.date_time,
+                    "activity_name": "Перевод",
+                    "cost": your_coast
+                })
 
             sorted_result = sorted(activities, key=lambda x: x['date_time'], reverse=True)
             return sorted_result

@@ -447,7 +447,7 @@ class ActiveUsersModel:
                 print(your_id, transaction.user_uuid)
                 if int(your_id) == int(transaction.user_uuid):
                     print(your_id, transaction.user_uuid)
-                    your_coast = -transaction.merch_coast
+                    # your_coast = -transaction.merch_coast
                     # another_user_id = transaction.user_to
                     # user_fio = await self.get_user_fio_by_id(another_user_id)
                     # another_user_fio = f"Вы"

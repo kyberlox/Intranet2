@@ -1,7 +1,7 @@
 import axios, { type AxiosProgressEvent, type AxiosRequestConfig } from 'axios';
 import { useUserData } from '@/stores/userData';
 import { computed } from 'vue';
-import type { IPostIdea, IAuth, IValidatePoints, IUsersLoad, IPostEventToExcell, IPostIdeaPdf } from
+import type { IPostIdea, IAuth, IValidatePoints, IUsersLoad, IPostEventToExcell, IPostIdeaPdf, IPeerTransaction } from
     '@/interfaces/IPostFetch';
 import type { IPointsForm, INewActivityData, IPurchaseMerchData } from '@/interfaces/IPutFetchData';
 import type { IPostCardMsg, INeuroChat } from '@/interfaces/IEntities';
@@ -69,6 +69,7 @@ export default class Api {
             | FormData
             | IPostCardMsg
             | IValidatePoints
+            | IPeerTransaction
             | INewActivityData
             | IUsersLoad
             | Array<IPostEventToExcell>

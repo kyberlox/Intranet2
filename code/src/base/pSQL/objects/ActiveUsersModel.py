@@ -414,19 +414,17 @@ class ActiveUsersModel:
             )
             result_merch = await session.execute(stmt_merch)
             merch_history = result_merch.scalars().all()
-            if not merch_history:
-                sorted_result = sorted(activities, key=lambda x: x['date_time'], reverse=True)
-                return sorted_result
-            for merch in merch_history:
-                activities.append({
-                    "id": merch.id,
-                    "user_uuid": merch.user_uuid,
-                    "fio_from": "Магазин мерча",
-                    "description": merch.merch_info,
-                    "date_time": merch.date_time,
-                    "activity_name": "Снятие баллов за покупку",
-                    "cost": -merch.merch_coast
-                })
+            if merch_history:
+                for merch in merch_history:
+                    activities.append({
+                        "id": merch.id,
+                        "user_uuid": merch.user_uuid,
+                        "fio_from": "Магазин мерча",
+                        "description": merch.merch_info,
+                        "date_time": merch.date_time,
+                        "activity_name": "Снятие баллов за покупку",
+                        "cost": -merch.merch_coast
+                    })
             
             # Получаем историю перводов
             print(self.uuid_to)

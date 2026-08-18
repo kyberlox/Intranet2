@@ -429,6 +429,7 @@ class ActiveUsersModel:
                 })
             
             # Получаем историю перводов
+            print(self.uuid_to)
             stmt_transaction = select(self.PeerHistory).where(
                 or_(
                     self.PeerHistory.user_uuid == int(self.uuid_to),

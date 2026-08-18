@@ -444,6 +444,7 @@ class ActiveUsersModel:
 
             for transaction in transaction_history:
                 your_id = self.uuid_to
+                print(your_id, transaction.user_uuid)
                 if your_id == transaction.user_uuid:
                     your_coast = -transaction.merch_coast
                     print(your_coast)

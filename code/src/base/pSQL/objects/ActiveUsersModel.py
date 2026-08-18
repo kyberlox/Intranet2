@@ -431,20 +431,20 @@ class ActiveUsersModel:
             sorted_result = sorted(activities, key=lambda x: x['date_time'], reverse=True)
             
             # Получаем историю перводов
-            stmt_transaction = select(self.PeerHistory).where(
-                self.PeerHistory.user_uuid == int(self.uuid_to),
-                self.PeerHistory.info_type == 'transaction'
-            )
-            result_transaction = await session.execute(stmt_transaction)
-            transaction_history = result_transaction.scalars().all()
+            # stmt_transaction = select(self.PeerHistory).where(
+            #     self.PeerHistory.user_uuid == int(self.uuid_to),
+            #     self.PeerHistory.info_type == 'transaction'
+            # )
+            # result_transaction = await session.execute(stmt_transaction)
+            # transaction_history = result_transaction.scalars().all()
 
-            if not transaction_history:
-                sorted_result = sorted(activities, key=lambda x: x['date_time'], reverse=True)
-                return sorted_result
+            # if not transaction_history:
+            #     sorted_result = sorted(activities, key=lambda x: x['date_time'], reverse=True)
+            #     return sorted_result
 
-            for transaction in transaction_history:
-                your_id = self.uuid_to
-                print(your_id, transaction.user_uuid)
+            # for transaction in transaction_history:
+            #     your_id = self.uuid_to
+            #     print(your_id, transaction.user_uuid)
                 # if int(your_id) == int(transaction.user_uuid):
                     # print(your_id, transaction.user_uuid)
                     # your_coast = -transaction.merch_coast

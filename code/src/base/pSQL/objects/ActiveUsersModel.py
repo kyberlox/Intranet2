@@ -414,8 +414,7 @@ class ActiveUsersModel:
             )
             result_merch = await session.execute(stmt_merch)
             merch_history = result_merch.scalars().all()
-            print(merch_history)
-            if len(merch_history) > 0:
+            if merch_history:
                 for merch in merch_history:
                     activities.append({
                         "id": merch.id,
@@ -426,6 +425,8 @@ class ActiveUsersModel:
                         "activity_name": "Снятие баллов за покупку",
                         "cost": -merch.merch_coast
                     })
+            else:
+                print("нет покупок")
             
             # Получаем историю перводов
             print(self.uuid_to)

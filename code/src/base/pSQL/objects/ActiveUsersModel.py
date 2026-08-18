@@ -339,7 +339,7 @@ class ActiveUsersModel:
         
         return user_fio
 
-        async def user_history(self, session):
+    async def user_history(self, session):
         
         YEARS_ID = [7, 8, 9, 10, 11, 12, 13, 14, 15] # менять значеняи к годам если поменялись айдишники
         try:

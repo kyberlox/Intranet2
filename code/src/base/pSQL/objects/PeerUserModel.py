@@ -1169,6 +1169,7 @@ class PeerUserModel:
                 await self.set_new_balance(session, uuid_from, new_user_balance)
                 
                 msg_from = f"Перевод баллов на сумму - {how_match}. "
+                msg_to = f"Перевод баллов на сумму - {how_match}. "
 
                 #создается запись в PeerHistory
                 add_history = self.PeerHistory(

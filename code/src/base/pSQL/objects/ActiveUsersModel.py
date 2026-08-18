@@ -458,7 +458,7 @@ class ActiveUsersModel:
                     another_user_id = transaction.user_uuid
 
                     another_user_fio = await self.get_user_fio_by_id(session, another_user_id)
-                    message = f"Перевод бвллов на сумму {transaction.merch_coast} \n Отправитель  - {another_user_fio}" + transaction.description
+                    message = f"Перевод бвллов на сумму {transaction.merch_coast} \n Отправитель  - {another_user_fio}" + transaction.active_info
 
                 activities.append({
                     "id": transaction.id,

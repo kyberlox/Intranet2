@@ -443,10 +443,10 @@ class ActiveUsersModel:
                 return sorted_result
 
             for transaction in transaction_history:
-                print(transaction.user_uuid)
-                # your_id = self.uuid_to
-                # if your_id == transaction.user_uuid:
-                #     your_coast = -transaction.merch_coast
+                your_id = self.uuid_to
+                if your_id == transaction.user_uuid:
+                    your_coast = -transaction.merch_coast
+                    print(your_coast)
                 #     another_user_id = transaction.user_to
                 #     user_fio = await self.get_user_fio_by_id(another_user_id)
                 #     another_user_fio = f"Вы"

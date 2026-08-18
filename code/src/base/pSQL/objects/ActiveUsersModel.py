@@ -430,8 +430,10 @@ class ActiveUsersModel:
             
             # Получаем историю перводов
             stmt_transaction = select(self.PeerHistory).where(
-                self.PeerHistory.user_uuid == int(self.uuid_to),
-                # or self.PeerHistory.user_to == int(self.uuid_to)
+                or_(
+                    self.PeerHistory.user_uuid == int(self.uuid_to),
+                    self.PeerHistory.user_to == int(self.uuid_to)
+                    ),
                 self.PeerHistory.info_type == 'transaction'
             )
             result_transaction = await session.execute(stmt_transaction)

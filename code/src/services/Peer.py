@@ -653,7 +653,7 @@ async def send_points_to_dit(user_to: int, user_id: int = Depends(get_user_id_by
 
 
 @peer_router.post("/transaction")
-def transaction(user_id: int = Depends(get_user_id_by_session_id), data=Body(), session: AsyncSession = Depends(get_async_db)):
+async def transaction(user_id: int = Depends(get_user_id_by_session_id), data=Body(), session: AsyncSession = Depends(get_async_db)):
     #утомбовать входные данные
     msg = data["message"]
     if msg is not None:
@@ -666,3 +666,4 @@ def transaction(user_id: int = Depends(get_user_id_by_session_id), data=Body(), 
     }
 
     await Peer(user_uuid=user_id).transaction(session=session, data=data)
+    return True

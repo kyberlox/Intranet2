@@ -121,6 +121,12 @@ export const mainMenuPoints: MainMenuPoints = [
                 name: 'Информационное письмо о компании ЭМК',
                 href: 'https://intranet.emk.ru/api/files/Информационное_письмо_НПО_ЭМК.docx',
             },
+            {
+                id:2.9,
+                name: 'Сервис сбора контактов с выставок',
+                href:'https://intranet.emk.ru/api/auth_router/exhibition',
+                visibility:57
+            }
         ],
     },
     {

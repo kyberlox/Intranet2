@@ -28,7 +28,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref, watch, type Ref } from 'vue';
+import { defineComponent, onMounted, ref, type Ref } from 'vue';
 import { useExperienceData } from "@/composables/useExperienceData";
 import { useReferencesAndExpDataStore } from "@/stores/referencesAndExpData";
 import type { IDocument } from "@/interfaces/IEntities";
@@ -51,15 +51,17 @@ export default defineComponent({
         const docs: Ref<IDocument[]> = ref([]);
         const placeName = ref('');
 
-        const initializeData = () => {
-            const data = loadExperienceData();
+        const initializeData = async () => {
+            const data = await loadExperienceData();
+            if (!Object.keys(data).length || !props.factoryId || !props.sectorId) return;
 
-            watch(data, (newValue) => {
-                if (Object.keys(newValue).length && props.factoryId && props.sectorId) {
-                    docs.value = useReferencesAndExpDataStore().getCurrentDocs(props.factoryId, props.sectorId);
-                    placeName.value = useReferencesAndExpDataStore().getCurrentFactory(props.factoryId).factoryName;
-                };
-            }, { immediate: true })
+            const currentContent = useReferencesAndExpDataStore().getCurrentFactory(props.factoryId);
+            if (!currentContent) return;
+
+            docs.value = currentContent.sectors.find(
+                sector => sector.sectorId === props.sectorId
+            )?.sectorDocs ?? [];
+            placeName.value = currentContent.factoryName;
         }
         onMounted(() => {
             initializeData();

@@ -12,7 +12,7 @@
 <script lang="ts">
 import ComplexGallery from "@/components/tools/gallery/complex/ComplexGallery.vue";
 import { useRoute } from "vue-router";
-import { defineComponent, onMounted, ref, type Ref, watch } from "vue";
+import { defineComponent, onMounted, ref, type Ref } from "vue";
 import { useExperienceData } from "@/composables/useExperienceData";
 import { useReferencesAndExpDataStore } from "@/stores/referencesAndExpData";
 import { sectorLogoTips } from "../../../assets/static/factoryLogoTips";
@@ -37,24 +37,21 @@ export default defineComponent({
         }
 
 
-        const initializeData = () => {
-            const data = loadExperienceData();
-            watch(data, (newValue) => {
-                console.log(data);
-                if (Object.keys(newValue).length && props.factoryId) {
-                    const currentContent = useReferencesAndExpDataStore().getCurrentFactory(props.factoryId);
+        const initializeData = async () => {
+            const data = await loadExperienceData();
+            if (!Object.keys(data).length || !props.factoryId) return;
 
-                    slides.value = currentContent.sectors.map((sector) => ({
-                        id: Number(props.factoryId),
-                        factoryId: Number(props.factoryId),
-                        sectorId: sector.sectorId,
-                        name: sector.sectorTitle,
-                        attach: sector.sectorDocs ?? [],
-                        preview_file_url: getLogo(sector.sectorId as keyof typeof sectorLogoTips)
-                    }));
+            const currentContent = useReferencesAndExpDataStore().getCurrentFactory(props.factoryId);
+            if (!currentContent) return;
 
-                }
-            }, { deep: true, immediate: true });
+            slides.value = currentContent.sectors.map((sector) => ({
+                id: Number(props.factoryId),
+                factoryId: Number(props.factoryId),
+                sectorId: sector.sectorId,
+                name: sector.sectorTitle,
+                attach: sector.sectorDocs ?? [],
+                preview_file_url: getLogo(sector.sectorId as keyof typeof sectorLogoTips)
+            }));
         };
 
         onMounted(() => {

@@ -40,6 +40,7 @@ export default defineComponent({
         const initializeData = () => {
             const data = loadExperienceData();
             watch(data, (newValue) => {
+                console.log(data);
                 if (Object.keys(newValue).length && props.factoryId) {
                     const currentContent = useReferencesAndExpDataStore().getCurrentFactory(props.factoryId);
 

@@ -18,6 +18,7 @@ export interface SupportLink {
 export interface ISubPoint {
     id: number;
     name: string;
+    visibility?: number;
     href?: string;
     subpoints?: ISubPoint[],
     params?: {
@@ -28,6 +29,7 @@ export interface ISubPoint {
 export interface IMenuPoint {
     id: number;
     name: string;
+    visibility?: number;
     subPoints: ISubPoint[];
     href?: string;
 }

@@ -31,7 +31,7 @@
                                     @click="isMobileScreen ? handleDropdown(activeDrop == point.id ? 'close' : 'open', point.id) : ''"
                                     :class="[{ 'dropdown--opened': point.id == activeDrop },
                                     { 'dropdown--mobile': isMobileScreen }]"
-                                    v-for="point in mainMenuPoints"
+                                    v-for="point in visibleMainMenuPoints"
                                     :key="'point' + point.id">
                                     <div class="nav-link nav-link--main-points dropdown-toggle"
                                          :to="{ name: point.href }"
@@ -130,9 +130,9 @@
 </template>
 
 <script lang="ts">
-import { ref, computed, watch, defineComponent, watchEffect } from "vue";
+import { ref, computed, watch, defineComponent } from "vue";
 import { mainMenuPoints } from "@/assets/static/navLinks";
-import type { ISubPoint } from "@/interfaces/ILayout";
+import type { IMenuPoint, ISubPoint } from "@/interfaces/ILayout";
 import { usePageDataStore } from "@/stores/pageData";
 import { useRoute, useRouter } from "vue-router";
 import SidebarLk from "../sidebars/TopRightSidebar.vue";
@@ -170,6 +170,31 @@ export default defineComponent({
         const { width } = useWindowSize();
         const pointsModalIsOpen = ref(false);
 
+        const hasVisibilityAccess = (point: { visibility?: number }) => {
+            return point.visibility === undefined
+                || (userData.getUserRoots.VisionRoots ?? []).includes(point.visibility);
+        };
+
+        const filterVisibleSubPoints = (points: ISubPoint[]): ISubPoint[] => {
+            return points
+                .filter(hasVisibilityAccess)
+                .map((point) => ({
+                    ...point,
+                    ...(point.subpoints
+                        ? { subpoints: filterVisibleSubPoints(point.subpoints) }
+                        : {}),
+                }));
+        };
+
+        const visibleMainMenuPoints = computed<IMenuPoint[]>(() => {
+            return mainMenuPoints
+                .filter(hasVisibilityAccess)
+                .map((point) => ({
+                    ...point,
+                    subPoints: filterVisibleSubPoints(point.subPoints),
+                }));
+        });
+
         watch(
             () => route.name,
             (newVal) => {
@@ -194,7 +219,7 @@ export default defineComponent({
         };
 
         return {
-            mainMenuPoints,
+            visibleMainMenuPoints,
             activeDrop,
             visibleSidebar,
             visibleSearchModal,

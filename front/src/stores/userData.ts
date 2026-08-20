@@ -13,6 +13,7 @@ export const useUserData = defineStore('userData', {
             PeerModer: false,
             EditorAdmin: false,
             VisionAdmin: false,
+            VisionRoots: [],
             peerCurator: [],
             EditorModer: [],
             GPT_gen_access: false
@@ -33,7 +34,11 @@ export const useUserData = defineStore('userData', {
             this.user = userData;
         },
         setUserRoots(data: IRoots) {
-            this.roots = data;
+            this.roots = {
+                ...this.roots,
+                ...data,
+                VisionRoots: data.VisionRoots ?? [],
+            };
         },
         initLogin(key: string, myId: number) {
             if (key && myId) {

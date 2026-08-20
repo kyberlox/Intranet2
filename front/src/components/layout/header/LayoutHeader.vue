@@ -212,6 +212,14 @@ export default defineComponent({
         const handleDropDownItemClick = (point: ISubPoint) => {
             activeDrop.value = null;
 
+            if (!point.href) return;
+
+            if (/^https?:\/\//i.test(point.href)) {
+                isMobileMenuOpen.value = false;
+                globalThis.location.href = point.href;
+                return;
+            }
+
             router.push({
                 name: point.href,
             })

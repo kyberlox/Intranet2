@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { useUserData } from '@/stores/userData';
 import Api from '@/utils/Api';
 import { nextTick } from 'vue';
+import Cookies from 'js-cookie';
 
 const oauthDomen = import.meta.env.VITE_OAUTH_DOMEN;
 const oauthClient = import.meta.env.VITE_OAUTH_CLIENT_ID;
@@ -21,7 +22,8 @@ const checkIsAdmin = async () => {
 
 const checkIsLogin = async () => {
     await nextTick()
-    return useUserData().getIsLogin;
+    // return useUserData().getIsLogin;
+    return Cookies.get('session_id')
 }
 
 const router = createRouter({

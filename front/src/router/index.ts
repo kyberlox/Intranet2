@@ -788,7 +788,7 @@ const router = createRouter({
                 }
                 else
                     // next({ name: 'home', query: { reroute: '/api/auth_router/exhibition_app' } })
-                    next({ name: 'home', query: { reroute: 'https://intranet.emk.ru/auth_router/argconf' } })
+                    next({ name: 'home', query: { reroute: '/auth_router/argconf' } })
 
             },
             redirect: '',

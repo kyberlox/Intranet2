@@ -98,6 +98,14 @@ import { useUserScore } from '@/stores/userScoreData';
 import { createUniqueArr } from '@/utils/stringUtils';
 import type { AxiosError } from 'axios';
 
+interface PersonalField {
+    label: string;
+    values: string[];
+    copyable: boolean;
+}
+
+type PersonalFields = Record<'personal' | 'contact', Record<string, PersonalField>>;
+
 export default defineComponent({
     props: {
         id: {
@@ -193,7 +201,7 @@ export default defineComponent({
             else return date.replaceAll('.', '-')
         }
 
-        const personalFields = computed(() => ({
+        const personalFields = computed<PersonalFields>(() => ({
             personal: {
                 'fio': {
                     label: 'ФИО',

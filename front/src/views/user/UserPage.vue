@@ -1,118 +1,84 @@
 <template>
-    <div class="row">
-        <div class="col-12 col-md-10">
-            <div class="personal__user__section row" v-if="user">
-                <div class="col-12 col-md-6">
-                    <div class="personal__user__photo">
-                        <img v-if="user && user.photo_file_url" :src="user.photo_file_url" alt="Игорь"
-                            @click="modalIsOpen = true" />
-                        <img v-else src="@/assets/imgs/plugs/userplug.jpg" alt="Фото пользователя не найдено" />
-                    </div>
-                    <div class="personal__user__about">
-                    </div>
-                    <div class="personal__user__mess">
-                        <a :href='"https://portal.emk.ru/company/personal/user/" + user.id + "/"' target="_blank"
-                            class="personal__user__mess__link primary-button">Профиль в Bitrix24</a>
-                        <!-- <button v-if="user.id !== myId && featureFlags.pointsSystem"
+<div class="row">
+    <div class="col-12 col-md-10">
+        <div class="personal__user__section row"
+             v-if="user">
+            <div class="col-12 col-md-6">
+                <div class="personal__user__photo">
+                    <img v-if="user && user.photo_file_url"
+                         :src="user.photo_file_url"
+                         alt="Игорь"
+                         @click="modalIsOpen = true" />
+                    <img v-else
+                         src="@/assets/imgs/plugs/userplug.jpg"
+                         alt="Фото пользователя не найдено" />
+                </div>
+                <div class="personal__user__about">
+                </div>
+                <div class="personal__user__mess">
+                    <a :href='"https://portal.emk.ru/company/personal/user/" + user.id + "/"'
+                       target="_blank"
+                       class="personal__user__mess__link primary-button">Профиль в Bitrix24</a>
+                    <!-- <button v-if="user.id !== myId && featureFlags.pointsSystem"
                             class="personal__user__mess__link primary-button"
                             @click="isPointsModalOpen = true">Отправить баллы</button> -->
-                    </div>
-                </div>
-
-                <div class="col-12 col-md-6">
-                    <div class="personal__user__top">
-                        <div class="grid__content-1">
-                            <h3 class="personal__user__top__title">Контактная информация</h3>
-                        </div>
-                    </div>
-                    <div class="personal__user__property">
-                        <div class="grid__content-1">
-                            <div class="personal__user__property__items">
-                                <div v-if="user.fio" class="personal__user__property__items__fio">
-                                    <h3>ФИО</h3>
-                                    <span>{{ user.fio }}</span>
-                                </div>
-                                <div v-if="user.indirect_data && user.indirect_data.work_position"
-                                    class="personal__user__property__items__work-position">
-                                    <h3>Должность</h3>
-                                    <span>{{ user.indirect_data.work_position }}</span>
-                                </div>
-                                <div v-if="user.indirect_data && user.indirect_data.uf_usr_1696592324977 && user.indirect_data.uf_usr_1696592324977.length"
-                                    class="personal__user__property__items__uf_usr_1696592324977">
-                                    <h3>Дирекция</h3>
-                                    <span v-for="item in user.indirect_data.uf_usr_1696592324977" :key="'dir' + item">
-                                        {{ item }}
-                                    </span>
-                                </div>
-                                <div class="personal__user__property__items__uf_usr_1705744824758"
-                                    v-if="user.indirect_data.uf_department || (user.indirect_data && user.indirect_data.uf_usr_1705744824758 && user.indirect_data.uf_usr_1705744824758.length)">
-                                    <h3>Отдел</h3>
-                                    <span
-                                        v-for="(item, index) in (createUniqueArr(user.indirect_data.uf_department, user.indirect_data.uf_usr_1705744824758))"
-                                        :key="'dep' + index">
-                                        {{ item }}
-                                    </span>
-                                </div>
-                                <div v-if="user.personal_birthday" class="personal__user__property__items__birthday">
-                                    <h3>День рождения</h3>
-                                    <span>
-                                        {{ formatBirthday(user.personal_birthday) }}
-                                    </span>
-                                </div>
-                                <div v-if="user.personal_city" class="personal__user__property__items__workplace">
-                                    <h3>Местоположение</h3>
-                                    <span>
-                                        {{ user.personal_city }}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="grid__content-1">
-                            <div class="personal__user__property__items">
-                                <div v-if="user.email" class="personal__user__property__items__email">
-                                    <h3>Контактный e-mail</h3>
-                                    <span>{{ user.email }}</span>
-                                </div>
-                                <div v-if="user.indirect_data && user.indirect_data.uf_usr_1586854037086"
-                                    class="personal__user__property__items__office">
-                                    <h3>Кабинет</h3>
-                                    <span>{{ user.indirect_data.uf_usr_1586854037086 }}</span>
-                                </div>
-                                <div v-if="user.uf_usr_1753418205828"
-                                    class="personal__user__property__items__inner-phone">
-                                    <h3>Внутренний телефон</h3>
-                                    <span>{{ user.uf_usr_1753418205828 }}</span>
-                                </div>
-                                <div v-if="user.indirect_data && user.indirect_data.work_phone"
-                                    class="personal__user__property__items__work-phone">
-                                    <h3>Рабочий телефон</h3>
-                                    <span>{{ user.indirect_data.work_phone }}</span>
-                                </div>
-                                <div v-if="user.indirect_data && user.indirect_data.date_of_employment"
-                                    class="personal__user__property__items__work-phone">
-                                    <h3>Дата приема на работу</h3>
-                                    <span>{{ formatDate(user.indirect_data.date_of_employment) }}</span>
-                                </div>
-                                <div>
-                                    <h3 class="personal__user__top__title">Электронная визитная карточка</h3>
-                                    <RouterLink :to="{ name: 'vcard', params: { id: user.uuid } }"
-                                        class="personal__user__vcard"
-                                        :style="{ 'background-image': `url(${user.vcard_file_url})` }">
-                                    </RouterLink>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
-            <div v-else class="contest__page__loader">
-                <Loader />
+
+            <div class="col-12 col-md-6">
+                <div class="personal__user__top">
+                    <div class="grid__content-1">
+                        <h3 class="personal__user__top__title">Контактная информация</h3>
+                    </div>
+                </div>
+                <div class="personal__user__property">
+                    <div v-for="(fields, column) in personalFields"
+                         :key="column"
+                         class="grid__content-1">
+                        <div class="personal__user__property__items">
+                            <template v-for="(field, key) in fields"
+                                      :key="key">
+                                <div v-if="field.values.length"
+                                     :class="`personal__user__property__items__${key}`">
+                                    <h3>{{ field.label }}</h3>
+                                    <template v-for="(value, index) in field.values"
+                                              :key="index">
+                                        <span v-if="field.copyable"
+                                              class="personal__user__property__items__copyable"
+                                              role="button"
+                                              tabindex="0"
+                                              title="Скопировать"
+                                              @click="copyField(value)"
+                                              @keydown.enter.prevent="copyField(value)"
+                                              @keydown.space.prevent="copyField(value)">{{ value }}</span>
+                                        <span v-else>{{ value }}</span>
+                                    </template>
+                                </div>
+                            </template>
+                            <div v-if="column === 'contact'">
+                                <h3 class="personal__user__top__title">Электронная визитная карточка</h3>
+                                <RouterLink :to="{ name: 'vcard', params: { id: user.uuid } }"
+                                            class="personal__user__vcard"
+                                            :style="{ 'background-image': `url(${user.vcard_file_url})` }">
+                                </RouterLink>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-        <ZoomModal :image="[user.photo_file_url ?? '@/assets/imgs/plugs/userplug.jpg']" v-if="modalIsOpen == true"
-            @close="modalIsOpen = false" />
-        <SendPoints v-if="isPointsModalOpen" @sendPoints="sendPoints" @close="isPointsModalOpen = false" />
+        <div v-else
+             class="contest__page__loader">
+            <Loader />
+        </div>
     </div>
+    <ZoomModal :image="[user.photo_file_url ?? '@/assets/imgs/plugs/userplug.jpg']"
+               v-if="modalIsOpen == true"
+               @close="modalIsOpen = false" />
+    <SendPoints v-if="isPointsModalOpen"
+                @sendPoints="sendPoints"
+                @close="isPointsModalOpen = false" />
+</div>
 </template>
 
 <script lang="ts">
@@ -120,7 +86,6 @@ import { defineComponent, ref, computed, onUnmounted } from 'vue';
 import Api from '@/utils/Api';
 import ZoomModal from "@/components/tools/modal/ZoomModal.vue";
 import { watch } from 'vue';
-import { type IUser } from '@/interfaces/IEntities';
 import { useUserData } from '@/stores/userData';
 import SendPoints from './userPointsComponents/SendPointsModalSlot.vue';
 import { handleApiError, handleApiResponse } from '@/utils/apiResponseCheck';
@@ -153,10 +118,10 @@ export default defineComponent({
         const toastInstance = useToast();
         const toast = useToastCompose(toastInstance);
 
-        watch(props, async (newVal) => {
+        watch(() => props.id, async (newVal) => {
             if (newVal) {
                 user.value = '';
-                const res = await Api.get(`users/find_by/${newVal.id}`, null, abortController.signal)
+                const res = await Api.get(`users/find_by/${newVal}`, null, abortController.signal)
                 user.value = res;
                 if (user.value && user.value.last_name && user.value.name && user.value.second_name) {
                     user.value.fio = user.value.last_name + " " + user.value.name + " " + user.value.second_name
@@ -164,7 +129,19 @@ export default defineComponent({
             }
         }, { immediate: true, deep: true })
 
-        function formatBirthday(dateString: string): string {
+        const copyField = async (value: string) => {
+            value = String(value).trim();
+            if (!value) return;
+
+            try {
+                await navigator.clipboard.writeText(value);
+                toastInstance.add({ severity: 'success', summary: 'Скопировано', life: 2000 });
+            } catch {
+                toastInstance.add({ severity: 'error', summary: 'Не удалось скопировать', life: 3000 });
+            }
+        };
+
+        const formatBirthday = (dateString: string): string => {
             if (!dateString) return '';
 
             const date = new Date(dateString);
@@ -216,6 +193,72 @@ export default defineComponent({
             else return date.replaceAll('.', '-')
         }
 
+        const personalFields = computed(() => ({
+            personal: {
+                'fio': {
+                    label: 'ФИО',
+                    values: [user.value?.fio].filter(Boolean),
+                    copyable: true
+                },
+                'work-position': {
+                    label: 'Должность',
+                    values: [user.value?.indirect_data?.work_position].filter(Boolean),
+                    copyable: true
+                },
+                'uf_usr_1696592324977': {
+                    label: 'Дирекция',
+                    values: user.value?.indirect_data?.uf_usr_1696592324977 ?? [],
+                    copyable: true
+                },
+                'uf_usr_1705744824758': {
+                    label: 'Отдел',
+                    values: [...createUniqueArr(
+                        user.value?.indirect_data?.uf_department ?? [],
+                        user.value?.indirect_data?.uf_usr_1705744824758 ?? []
+                    )],
+                    copyable: true
+                },
+                'birthday': {
+                    label: 'День рождения',
+                    values: user.value?.personal_birthday ? [formatBirthday(user.value.personal_birthday)] : [],
+                    copyable: true
+                },
+                'workplace': {
+                    label: 'Местоположение',
+                    values: [user.value?.personal_city].filter(Boolean),
+                    copyable: true
+                }
+            },
+            contact: {
+                'email': {
+                    label: 'Контактный e-mail',
+                    values: [user.value?.email].filter(Boolean),
+                    copyable: true
+                },
+                'office': {
+                    label: 'Кабинет',
+                    values: [user.value?.indirect_data?.uf_usr_1586854037086].filter(Boolean),
+                    copyable: true
+                },
+                'inner-phone': {
+                    label: 'Внутренний телефон',
+                    values: [user.value?.uf_usr_1753418205828].filter(Boolean),
+                    copyable: true
+                },
+                'work-phone': {
+                    label: 'Рабочий телефон',
+                    values: [user.value?.indirect_data?.work_phone].filter(Boolean),
+                    copyable: true
+                },
+                'employment-date': {
+                    label: 'Дата приема на работу',
+                    values: user.value?.indirect_data?.date_of_employment
+                        ? [formatDate(user.value.indirect_data.date_of_employment)] : [],
+                    copyable: false
+                }
+            }
+        }));
+
         onUnmounted(() => abortController.abort())
 
         return {
@@ -225,9 +268,8 @@ export default defineComponent({
             featureFlags,
             myId: computed(() => userData.getMyId),
             sendPoints,
-            formatDate,
-            formatBirthday,
-            createUniqueArr
+            personalFields,
+            copyField
         }
     }
 })

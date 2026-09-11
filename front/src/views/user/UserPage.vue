@@ -112,7 +112,7 @@ export default defineComponent({
         }, { immediate: true, deep: true })
 
         const copyField = async (value: string) => {
-            value = value.trim();
+            value = String(value).trim();
             if (!value) return;
 
             try {
@@ -175,39 +175,71 @@ export default defineComponent({
             else return date.replaceAll('.', '-')
         }
 
-        const personalFields = computed(() => {
-            const data = user.value;
-            const indirect = data?.indirect_data;
-            const field = (label: string, value: unknown, copyable = true) => ({
-                label,
-                values: (Array.isArray(value) ? value : [value])
-                    .filter(value => value !== undefined && value !== null && value !== '')
-                    .map(String),
-                copyable
-            });
-
-            return {
-                personal: {
-                    fio: field('ФИО', data?.fio),
-                    'work-position': field('Должность', indirect?.work_position),
-                    uf_usr_1696592324977: field('Дирекция', indirect?.uf_usr_1696592324977),
-                    uf_usr_1705744824758: field('Отдел', [...createUniqueArr(
-                        indirect?.uf_department ?? [], indirect?.uf_usr_1705744824758 ?? []
-                    )]),
-                    birthday: field('День рождения', data?.personal_birthday
-                        ? formatBirthday(data.personal_birthday) : ''),
-                    workplace: field('Местоположение', data?.personal_city)
+        const personalFields = computed(() => ({
+            personal: {
+                'fio': {
+                    label: 'ФИО',
+                    values: [user.value?.fio].filter(Boolean),
+                    copyable: true
                 },
-                contact: {
-                    email: field('Контактный e-mail', data?.email),
-                    office: field('Кабинет', indirect?.uf_usr_1586854037086),
-                    'inner-phone': field('Внутренний телефон', data?.uf_usr_1753418205828),
-                    'work-phone': field('Рабочий телефон', indirect?.work_phone),
-                    'employment-date': field('Дата приема на работу', indirect?.date_of_employment
-                        ? formatDate(indirect.date_of_employment) : '', false)
+                'work-position': {
+                    label: 'Должность',
+                    values: [user.value?.indirect_data?.work_position].filter(Boolean),
+                    copyable: true
+                },
+                'uf_usr_1696592324977': {
+                    label: 'Дирекция',
+                    values: user.value?.indirect_data?.uf_usr_1696592324977 ?? [],
+                    copyable: true
+                },
+                'uf_usr_1705744824758': {
+                    label: 'Отдел',
+                    values: [...createUniqueArr(
+                        user.value?.indirect_data?.uf_department ?? [],
+                        user.value?.indirect_data?.uf_usr_1705744824758 ?? []
+                    )],
+                    copyable: true
+                },
+                'birthday': {
+                    label: 'День рождения',
+                    values: user.value?.personal_birthday ? [formatBirthday(user.value.personal_birthday)] : [],
+                    copyable: true
+                },
+                'workplace': {
+                    label: 'Местоположение',
+                    values: [user.value?.personal_city].filter(Boolean),
+                    copyable: true
                 }
-            };
-        });
+            },
+            contact: {
+                'email': {
+                    label: 'Контактный e-mail',
+                    values: [user.value?.email].filter(Boolean),
+                    copyable: true
+                },
+                'office': {
+                    label: 'Кабинет',
+                    values: [user.value?.indirect_data?.uf_usr_1586854037086].filter(Boolean),
+                    copyable: true
+                },
+                'inner-phone': {
+                    label: 'Внутренний телефон',
+                    values: [user.value?.uf_usr_1753418205828].filter(Boolean),
+                    copyable: true
+                },
+                'work-phone': {
+                    label: 'Рабочий телефон',
+                    values: [user.value?.indirect_data?.work_phone].filter(Boolean),
+                    copyable: true
+                },
+                'employment-date': {
+                    label: 'Дата приема на работу',
+                    values: user.value?.indirect_data?.date_of_employment
+                        ? [formatDate(user.value.indirect_data.date_of_employment)] : [],
+                    copyable: false
+                }
+            }
+        }));
 
         onUnmounted(() => abortController.abort())
 

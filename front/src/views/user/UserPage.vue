@@ -1,66 +1,84 @@
 <template>
-    <div class="row">
-        <div class="col-12 col-md-10">
-            <div class="personal__user__section row" v-if="user">
-                <div class="col-12 col-md-6">
-                    <div class="personal__user__photo">
-                        <img v-if="user && user.photo_file_url" :src="user.photo_file_url" alt="Игорь"
-                            @click="modalIsOpen = true" />
-                        <img v-else src="@/assets/imgs/plugs/userplug.jpg" alt="Фото пользователя не найдено" />
-                    </div>
-                    <div class="personal__user__about">
-                    </div>
-                    <div class="personal__user__mess">
-                        <a :href='"https://portal.emk.ru/company/personal/user/" + user.id + "/"' target="_blank"
-                            class="personal__user__mess__link primary-button">Профиль в Bitrix24</a>
-                        <!-- <button v-if="user.id !== myId && featureFlags.pointsSystem"
+<div class="row">
+    <div class="col-12 col-md-10">
+        <div class="personal__user__section row"
+             v-if="user">
+            <div class="col-12 col-md-6">
+                <div class="personal__user__photo">
+                    <img v-if="user && user.photo_file_url"
+                         :src="user.photo_file_url"
+                         alt="Игорь"
+                         @click="modalIsOpen = true" />
+                    <img v-else
+                         src="@/assets/imgs/plugs/userplug.jpg"
+                         alt="Фото пользователя не найдено" />
+                </div>
+                <div class="personal__user__about">
+                </div>
+                <div class="personal__user__mess">
+                    <a :href='"https://portal.emk.ru/company/personal/user/" + user.id + "/"'
+                       target="_blank"
+                       class="personal__user__mess__link primary-button">Профиль в Bitrix24</a>
+                    <!-- <button v-if="user.id !== myId && featureFlags.pointsSystem"
                             class="personal__user__mess__link primary-button"
                             @click="isPointsModalOpen = true">Отправить баллы</button> -->
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+                <div class="personal__user__top">
+                    <div class="grid__content-1">
+                        <h3 class="personal__user__top__title">Контактная информация</h3>
                     </div>
                 </div>
-
-                <div class="col-12 col-md-6">
-                    <div class="personal__user__top">
-                        <div class="grid__content-1">
-                            <h3 class="personal__user__top__title">Контактная информация</h3>
-                        </div>
-                    </div>
-                    <div class="personal__user__property">
-                        <div v-for="(fields, column) in personalFields" :key="column" class="grid__content-1">
-                            <div class="personal__user__property__items">
-                                <template v-for="(field, key) in fields" :key="key">
-                                    <div v-if="field.values.length" :class="`personal__user__property__items__${key}`">
-                                        <h3>{{ field.label }}</h3>
-                                        <template v-for="(value, index) in field.values" :key="index">
-                                            <span v-if="field.copyable"
-                                                class="personal__user__property__items__copyable" role="button"
-                                                tabindex="0" title="Скопировать" @click="copyField(value)"
-                                                @keydown.enter.prevent="copyField(value)"
-                                                @keydown.space.prevent="copyField(value)">{{ value }}</span>
-                                            <span v-else>{{ value }}</span>
-                                        </template>
-                                    </div>
-                                </template>
-                                <div v-if="column === 'contact'">
-                                    <h3 class="personal__user__top__title">Электронная визитная карточка</h3>
-                                    <RouterLink :to="{ name: 'vcard', params: { id: user.uuid } }"
-                                        class="personal__user__vcard"
-                                        :style="{ 'background-image': `url(${user.vcard_file_url})` }">
-                                    </RouterLink>
+                <div class="personal__user__property">
+                    <div v-for="(fields, column) in personalFields"
+                         :key="column"
+                         class="grid__content-1">
+                        <div class="personal__user__property__items">
+                            <template v-for="(field, key) in fields"
+                                      :key="key">
+                                <div v-if="field.values.length"
+                                     :class="`personal__user__property__items__${key}`">
+                                    <h3>{{ field.label }}</h3>
+                                    <template v-for="(value, index) in field.values"
+                                              :key="index">
+                                        <span v-if="field.copyable"
+                                              class="personal__user__property__items__copyable"
+                                              role="button"
+                                              tabindex="0"
+                                              title="Скопировать"
+                                              @click="copyField(value)"
+                                              @keydown.enter.prevent="copyField(value)"
+                                              @keydown.space.prevent="copyField(value)">{{ value }}</span>
+                                        <span v-else>{{ value }}</span>
+                                    </template>
                                 </div>
+                            </template>
+                            <div v-if="column === 'contact'">
+                                <h3 class="personal__user__top__title">Электронная визитная карточка</h3>
+                                <RouterLink :to="{ name: 'vcard', params: { id: user.uuid } }"
+                                            class="personal__user__vcard"
+                                            :style="{ 'background-image': `url(${user.vcard_file_url})` }">
+                                </RouterLink>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div v-else class="contest__page__loader">
-                <Loader />
-            </div>
         </div>
-        <ZoomModal :image="[user.photo_file_url ?? '@/assets/imgs/plugs/userplug.jpg']" v-if="modalIsOpen == true"
-            @close="modalIsOpen = false" />
-        <SendPoints v-if="isPointsModalOpen" @sendPoints="sendPoints" @close="isPointsModalOpen = false" />
+        <div v-else
+             class="contest__page__loader">
+            <Loader />
+        </div>
     </div>
+    <ZoomModal :image="[user.photo_file_url ?? '@/assets/imgs/plugs/userplug.jpg']"
+               v-if="modalIsOpen == true"
+               @close="modalIsOpen = false" />
+    <SendPoints v-if="isPointsModalOpen"
+                @sendPoints="sendPoints"
+                @close="isPointsModalOpen = false" />
+</div>
 </template>
 
 <script lang="ts">
@@ -100,10 +118,10 @@ export default defineComponent({
         const toastInstance = useToast();
         const toast = useToastCompose(toastInstance);
 
-        watch(props, async (newVal) => {
+        watch(() => props.id, async (newVal) => {
             if (newVal) {
                 user.value = '';
-                const res = await Api.get(`users/find_by/${newVal.id}`, null, abortController.signal)
+                const res = await Api.get(`users/find_by/${newVal}`, null, abortController.signal)
                 user.value = res;
                 if (user.value && user.value.last_name && user.value.name && user.value.second_name) {
                     user.value.fio = user.value.last_name + " " + user.value.name + " " + user.value.second_name
@@ -123,7 +141,7 @@ export default defineComponent({
             }
         };
 
-        function formatBirthday(dateString: string): string {
+        const formatBirthday = (dateString: string): string => {
             if (!dateString) return '';
 
             const date = new Date(dateString);

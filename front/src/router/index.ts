@@ -785,6 +785,7 @@ const router = createRouter({
             path: '/auth_router/argconf',
             name: 'argconf-auth',
             beforeEnter: async (to, from, next) => {
+                console.log(await Promise.resolve(checkIsLogin()))
                 if (await Promise.resolve(checkIsLogin())) {
                     window.location.href = 'https://intranet.emk.ru/api/auth_router/argconf'
                 }

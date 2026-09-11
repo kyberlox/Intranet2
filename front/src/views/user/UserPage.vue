@@ -26,84 +26,22 @@
                         </div>
                     </div>
                     <div class="personal__user__property">
-                        <div class="grid__content-1">
+                        <div v-for="(fields, column) in personalFields" :key="column" class="grid__content-1">
                             <div class="personal__user__property__items">
-                                <div v-if="user.fio" class="personal__user__property__items__fio">
-                                    <h3>ФИО</h3>
-                                    <span class="copyable-field" role="button" tabindex="0" title="Скопировать"
-                                        @click="copyField" @keydown.enter.prevent="copyField" @keydown.space.prevent="copyField">{{ user.fio }}</span>
-                                </div>
-                                <div v-if="user.indirect_data && user.indirect_data.work_position"
-                                    class="personal__user__property__items__work-position">
-                                    <h3>Должность</h3>
-                                    <span class="copyable-field" role="button" tabindex="0" title="Скопировать"
-                                        @click="copyField" @keydown.enter.prevent="copyField" @keydown.space.prevent="copyField">{{ user.indirect_data.work_position }}</span>
-                                </div>
-                                <div v-if="user.indirect_data && user.indirect_data.uf_usr_1696592324977 && user.indirect_data.uf_usr_1696592324977.length"
-                                    class="personal__user__property__items__uf_usr_1696592324977">
-                                    <h3>Дирекция</h3>
-                                    <span class="copyable-field" role="button" tabindex="0" title="Скопировать"
-                                        @click="copyField" @keydown.enter.prevent="copyField" @keydown.space.prevent="copyField" v-for="item in user.indirect_data.uf_usr_1696592324977" :key="'dir' + item">
-                                        {{ item }}
-                                    </span>
-                                </div>
-                                <div class="personal__user__property__items__uf_usr_1705744824758"
-                                    v-if="user.indirect_data.uf_department || (user.indirect_data && user.indirect_data.uf_usr_1705744824758 && user.indirect_data.uf_usr_1705744824758.length)">
-                                    <h3>Отдел</h3>
-                                    <span class="copyable-field" role="button" tabindex="0" title="Скопировать"
-                                        @click="copyField" @keydown.enter.prevent="copyField" @keydown.space.prevent="copyField"
-                                        v-for="(item, index) in (createUniqueArr(user.indirect_data.uf_department, user.indirect_data.uf_usr_1705744824758))"
-                                        :key="'dep' + index">
-                                        {{ item }}
-                                    </span>
-                                </div>
-                                <div v-if="user.personal_birthday" class="personal__user__property__items__birthday">
-                                    <h3>День рождения</h3>
-                                    <span class="copyable-field" role="button" tabindex="0" title="Скопировать"
-                                        @click="copyField" @keydown.enter.prevent="copyField" @keydown.space.prevent="copyField">
-                                        {{ formatBirthday(user.personal_birthday) }}
-                                    </span>
-                                </div>
-                                <div v-if="user.personal_city" class="personal__user__property__items__workplace">
-                                    <h3>Местоположение</h3>
-                                    <span class="copyable-field" role="button" tabindex="0" title="Скопировать"
-                                        @click="copyField" @keydown.enter.prevent="copyField" @keydown.space.prevent="copyField">
-                                        {{ user.personal_city }}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="grid__content-1">
-                            <div class="personal__user__property__items">
-                                <div v-if="user.email" class="personal__user__property__items__email">
-                                    <h3>Контактный e-mail</h3>
-                                    <span class="copyable-field" role="button" tabindex="0" title="Скопировать"
-                                        @click="copyField" @keydown.enter.prevent="copyField" @keydown.space.prevent="copyField">{{ user.email }}</span>
-                                </div>
-                                <div v-if="user.indirect_data && user.indirect_data.uf_usr_1586854037086"
-                                    class="personal__user__property__items__office">
-                                    <h3>Кабинет</h3>
-                                    <span class="copyable-field" role="button" tabindex="0" title="Скопировать"
-                                        @click="copyField" @keydown.enter.prevent="copyField" @keydown.space.prevent="copyField">{{ user.indirect_data.uf_usr_1586854037086 }}</span>
-                                </div>
-                                <div v-if="user.uf_usr_1753418205828"
-                                    class="personal__user__property__items__inner-phone">
-                                    <h3>Внутренний телефон</h3>
-                                    <span class="copyable-field" role="button" tabindex="0" title="Скопировать"
-                                        @click="copyField" @keydown.enter.prevent="copyField" @keydown.space.prevent="copyField">{{ user.uf_usr_1753418205828 }}</span>
-                                </div>
-                                <div v-if="user.indirect_data && user.indirect_data.work_phone"
-                                    class="personal__user__property__items__work-phone">
-                                    <h3>Рабочий телефон</h3>
-                                    <span class="copyable-field" role="button" tabindex="0" title="Скопировать"
-                                        @click="copyField" @keydown.enter.prevent="copyField" @keydown.space.prevent="copyField">{{ user.indirect_data.work_phone }}</span>
-                                </div>
-                                <div v-if="user.indirect_data && user.indirect_data.date_of_employment"
-                                    class="personal__user__property__items__work-phone">
-                                    <h3>Дата приема на работу</h3>
-                                    <span>{{ formatDate(user.indirect_data.date_of_employment) }}</span>
-                                </div>
-                                <div>
+                                <template v-for="(field, key) in fields" :key="key">
+                                    <div v-if="field.values.length" :class="`personal__user__property__items__${key}`">
+                                        <h3>{{ field.label }}</h3>
+                                        <template v-for="(value, index) in field.values" :key="index">
+                                            <span v-if="field.copyable"
+                                                class="personal__user__property__items__copyable" role="button"
+                                                tabindex="0" title="Скопировать" @click="copyField(value)"
+                                                @keydown.enter.prevent="copyField(value)"
+                                                @keydown.space.prevent="copyField(value)">{{ value }}</span>
+                                            <span v-else>{{ value }}</span>
+                                        </template>
+                                    </div>
+                                </template>
+                                <div v-if="column === 'contact'">
                                     <h3 class="personal__user__top__title">Электронная визитная карточка</h3>
                                     <RouterLink :to="{ name: 'vcard', params: { id: user.uuid } }"
                                         class="personal__user__vcard"
@@ -173,8 +111,8 @@ export default defineComponent({
             }
         }, { immediate: true, deep: true })
 
-        const copyField = async (event: Event) => {
-            const value = (event.currentTarget as HTMLElement).textContent?.trim();
+        const copyField = async (value: string) => {
+            value = value.trim();
             if (!value) return;
 
             try {
@@ -237,6 +175,40 @@ export default defineComponent({
             else return date.replaceAll('.', '-')
         }
 
+        const personalFields = computed(() => {
+            const data = user.value;
+            const indirect = data?.indirect_data;
+            const field = (label: string, value: unknown, copyable = true) => ({
+                label,
+                values: (Array.isArray(value) ? value : [value])
+                    .filter(value => value !== undefined && value !== null && value !== '')
+                    .map(String),
+                copyable
+            });
+
+            return {
+                personal: {
+                    fio: field('ФИО', data?.fio),
+                    'work-position': field('Должность', indirect?.work_position),
+                    uf_usr_1696592324977: field('Дирекция', indirect?.uf_usr_1696592324977),
+                    uf_usr_1705744824758: field('Отдел', [...createUniqueArr(
+                        indirect?.uf_department ?? [], indirect?.uf_usr_1705744824758 ?? []
+                    )]),
+                    birthday: field('День рождения', data?.personal_birthday
+                        ? formatBirthday(data.personal_birthday) : ''),
+                    workplace: field('Местоположение', data?.personal_city)
+                },
+                contact: {
+                    email: field('Контактный e-mail', data?.email),
+                    office: field('Кабинет', indirect?.uf_usr_1586854037086),
+                    'inner-phone': field('Внутренний телефон', data?.uf_usr_1753418205828),
+                    'work-phone': field('Рабочий телефон', indirect?.work_phone),
+                    'employment-date': field('Дата приема на работу', indirect?.date_of_employment
+                        ? formatDate(indirect.date_of_employment) : '', false)
+                }
+            };
+        });
+
         onUnmounted(() => abortController.abort())
 
         return {
@@ -246,22 +218,9 @@ export default defineComponent({
             featureFlags,
             myId: computed(() => userData.getMyId),
             sendPoints,
-            formatDate,
-            formatBirthday,
-            createUniqueArr,
+            personalFields,
             copyField
         }
     }
 })
 </script>
-
-<style scoped>
-.copyable-field {
-    cursor: pointer;
-}
-
-.copyable-field:hover,
-.copyable-field:focus-visible {
-    text-decoration: underline;
-}
-</style>

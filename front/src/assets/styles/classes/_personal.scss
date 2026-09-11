@@ -99,6 +99,15 @@
                 flex-direction: column;
                 gap: 10px;
 
+                &__copyable {
+                    cursor: pointer;
+
+                    &:hover,
+                    &:focus-visible {
+                        text-decoration: underline;
+                    }
+                }
+
                 & h3 {
                     font-size: 14px;
                     color: #656565;

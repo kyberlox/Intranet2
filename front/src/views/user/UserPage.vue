@@ -30,24 +30,28 @@
                             <div class="personal__user__property__items">
                                 <div v-if="user.fio" class="personal__user__property__items__fio">
                                     <h3>ФИО</h3>
-                                    <span>{{ user.fio }}</span>
+                                    <span class="copyable-field" role="button" tabindex="0" title="Скопировать"
+                                        @click="copyField" @keydown.enter.prevent="copyField" @keydown.space.prevent="copyField">{{ user.fio }}</span>
                                 </div>
                                 <div v-if="user.indirect_data && user.indirect_data.work_position"
                                     class="personal__user__property__items__work-position">
                                     <h3>Должность</h3>
-                                    <span>{{ user.indirect_data.work_position }}</span>
+                                    <span class="copyable-field" role="button" tabindex="0" title="Скопировать"
+                                        @click="copyField" @keydown.enter.prevent="copyField" @keydown.space.prevent="copyField">{{ user.indirect_data.work_position }}</span>
                                 </div>
                                 <div v-if="user.indirect_data && user.indirect_data.uf_usr_1696592324977 && user.indirect_data.uf_usr_1696592324977.length"
                                     class="personal__user__property__items__uf_usr_1696592324977">
                                     <h3>Дирекция</h3>
-                                    <span v-for="item in user.indirect_data.uf_usr_1696592324977" :key="'dir' + item">
+                                    <span class="copyable-field" role="button" tabindex="0" title="Скопировать"
+                                        @click="copyField" @keydown.enter.prevent="copyField" @keydown.space.prevent="copyField" v-for="item in user.indirect_data.uf_usr_1696592324977" :key="'dir' + item">
                                         {{ item }}
                                     </span>
                                 </div>
                                 <div class="personal__user__property__items__uf_usr_1705744824758"
                                     v-if="user.indirect_data.uf_department || (user.indirect_data && user.indirect_data.uf_usr_1705744824758 && user.indirect_data.uf_usr_1705744824758.length)">
                                     <h3>Отдел</h3>
-                                    <span
+                                    <span class="copyable-field" role="button" tabindex="0" title="Скопировать"
+                                        @click="copyField" @keydown.enter.prevent="copyField" @keydown.space.prevent="copyField"
                                         v-for="(item, index) in (createUniqueArr(user.indirect_data.uf_department, user.indirect_data.uf_usr_1705744824758))"
                                         :key="'dep' + index">
                                         {{ item }}
@@ -55,13 +59,15 @@
                                 </div>
                                 <div v-if="user.personal_birthday" class="personal__user__property__items__birthday">
                                     <h3>День рождения</h3>
-                                    <span>
+                                    <span class="copyable-field" role="button" tabindex="0" title="Скопировать"
+                                        @click="copyField" @keydown.enter.prevent="copyField" @keydown.space.prevent="copyField">
                                         {{ formatBirthday(user.personal_birthday) }}
                                     </span>
                                 </div>
                                 <div v-if="user.personal_city" class="personal__user__property__items__workplace">
                                     <h3>Местоположение</h3>
-                                    <span>
+                                    <span class="copyable-field" role="button" tabindex="0" title="Скопировать"
+                                        @click="copyField" @keydown.enter.prevent="copyField" @keydown.space.prevent="copyField">
                                         {{ user.personal_city }}
                                     </span>
                                 </div>
@@ -71,22 +77,26 @@
                             <div class="personal__user__property__items">
                                 <div v-if="user.email" class="personal__user__property__items__email">
                                     <h3>Контактный e-mail</h3>
-                                    <span>{{ user.email }}</span>
+                                    <span class="copyable-field" role="button" tabindex="0" title="Скопировать"
+                                        @click="copyField" @keydown.enter.prevent="copyField" @keydown.space.prevent="copyField">{{ user.email }}</span>
                                 </div>
                                 <div v-if="user.indirect_data && user.indirect_data.uf_usr_1586854037086"
                                     class="personal__user__property__items__office">
                                     <h3>Кабинет</h3>
-                                    <span>{{ user.indirect_data.uf_usr_1586854037086 }}</span>
+                                    <span class="copyable-field" role="button" tabindex="0" title="Скопировать"
+                                        @click="copyField" @keydown.enter.prevent="copyField" @keydown.space.prevent="copyField">{{ user.indirect_data.uf_usr_1586854037086 }}</span>
                                 </div>
                                 <div v-if="user.uf_usr_1753418205828"
                                     class="personal__user__property__items__inner-phone">
                                     <h3>Внутренний телефон</h3>
-                                    <span>{{ user.uf_usr_1753418205828 }}</span>
+                                    <span class="copyable-field" role="button" tabindex="0" title="Скопировать"
+                                        @click="copyField" @keydown.enter.prevent="copyField" @keydown.space.prevent="copyField">{{ user.uf_usr_1753418205828 }}</span>
                                 </div>
                                 <div v-if="user.indirect_data && user.indirect_data.work_phone"
                                     class="personal__user__property__items__work-phone">
                                     <h3>Рабочий телефон</h3>
-                                    <span>{{ user.indirect_data.work_phone }}</span>
+                                    <span class="copyable-field" role="button" tabindex="0" title="Скопировать"
+                                        @click="copyField" @keydown.enter.prevent="copyField" @keydown.space.prevent="copyField">{{ user.indirect_data.work_phone }}</span>
                                 </div>
                                 <div v-if="user.indirect_data && user.indirect_data.date_of_employment"
                                     class="personal__user__property__items__work-phone">
@@ -120,7 +130,6 @@ import { defineComponent, ref, computed, onUnmounted } from 'vue';
 import Api from '@/utils/Api';
 import ZoomModal from "@/components/tools/modal/ZoomModal.vue";
 import { watch } from 'vue';
-import { type IUser } from '@/interfaces/IEntities';
 import { useUserData } from '@/stores/userData';
 import SendPoints from './userPointsComponents/SendPointsModalSlot.vue';
 import { handleApiError, handleApiResponse } from '@/utils/apiResponseCheck';
@@ -163,6 +172,18 @@ export default defineComponent({
                 }
             }
         }, { immediate: true, deep: true })
+
+        const copyField = async (event: Event) => {
+            const value = (event.currentTarget as HTMLElement).textContent?.trim();
+            if (!value) return;
+
+            try {
+                await navigator.clipboard.writeText(value);
+                toastInstance.add({ severity: 'success', summary: 'Скопировано', life: 2000 });
+            } catch {
+                toastInstance.add({ severity: 'error', summary: 'Не удалось скопировать', life: 3000 });
+            }
+        };
 
         function formatBirthday(dateString: string): string {
             if (!dateString) return '';
@@ -227,8 +248,20 @@ export default defineComponent({
             sendPoints,
             formatDate,
             formatBirthday,
-            createUniqueArr
+            createUniqueArr,
+            copyField
         }
     }
 })
 </script>
+
+<style scoped>
+.copyable-field {
+    cursor: pointer;
+}
+
+.copyable-field:hover,
+.copyable-field:focus-visible {
+    text-decoration: underline;
+}
+</style>

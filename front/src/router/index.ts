@@ -788,7 +788,7 @@ const router = createRouter({
                 console.log(await Promise.resolve(checkIsLogin()))
                 if (await Promise.resolve(checkIsLogin())) {
                     const req = await Api.get('https://intranet.emk.ru/api/auth_router/argconf',)
-                    if (req.detail) {
+                    if (req && 'detail' in req) {
                         console.log('1')
                         next({ name: 'home', query: { reroute: 'https://intranet.emk.ru/auth_router/argconf' } })
                     }

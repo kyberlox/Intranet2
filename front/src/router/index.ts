@@ -787,10 +787,14 @@ const router = createRouter({
             beforeEnter: async (to, from, next) => {
                 console.log(await Promise.resolve(checkIsLogin()))
                 if (await Promise.resolve(checkIsLogin())) {
-                    window.location.href = 'https://intranet.emk.ru/api/auth_router/argconf'
+                    const req = await Api.get('https://intranet.emk.ru/api/auth_router/argconf',)
+                    if (req.detail) {
+                        next({ name: 'home', query: { reroute: 'https://intranet.emk.ru/auth_router/argconf' } })
+                    }
+                    else
+                        window.location.href = 'https://intranet.emk.ru/api/auth_router/argconf'
                 }
                 else
-                    // next({ name: 'home', query: { reroute: '/api/auth_router/exhibition_app' } })
                     next({ name: 'home', query: { reroute: 'https://intranet.emk.ru/auth_router/argconf' } })
 
             },

@@ -190,7 +190,9 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
         if open_link in request.url.path:
             response = await call_next(request)
             return response
-    
+    # Найти в auth_middleware, заменить свой вариант:
+    if request.url.hostname in ("localhost", "127.0.0.1", "::1"):
+        return await call_next(request)
     # Проверяем авторизацию для всех остальных /api эндпоинтов
     if request.url.path.startswith("/api"):
         # Создаем экземпляр сервиса авторизации

@@ -1,12 +1,14 @@
 import { defineStore } from "pinia";
 import type { IUser } from "@/interfaces/IEntities";
 import type { IRoots } from "@/interfaces/IEntities";
+import type { IUserNotification } from "@/interfaces/entities/IUser";
 
 export const useUserData = defineStore('userData', {
     state: () => ({
         myId: 0,
         authKey: '',
         user: {} as IUser,
+        notifications: null as IUserNotification[] | null,
         genCount: 1,
         roots: {
             PeerAdmin: false,
@@ -21,6 +23,9 @@ export const useUserData = defineStore('userData', {
         isLogin: false
     }),
     actions: {
+        setNotifications(notifications: IUserNotification[]) {
+            this.notifications = notifications;
+        },
         setMyId(id: number) {
             this.myId = id;
         },
@@ -53,6 +58,7 @@ export const useUserData = defineStore('userData', {
             this.authKey = '';
             this.isLogin = false;
             this.user = {} as IUser;
+            this.notifications = null;
             this.myId = 0;
             document.cookie.split(';').forEach(function (c) {
                 document.cookie = c.trim().split('=')[0] + '=;' + 'expires=Thu, 01 Jan 1970 00:00:00 UTC;';
@@ -68,7 +74,7 @@ export const useUserData = defineStore('userData', {
         getGptRoot: (state) => state.roots.GPT_gen_access || state.roots.EditorAdmin,
         getNeedAdminLink: (state) => Boolean(state.roots.EditorAdmin || state.roots.PeerAdmin || state.roots.VisionAdmin || state.roots.EditorModer?.length || state.roots.PeerModer || state.roots.peerCurator?.length),
         getUser: (state) => state.user,
-        getNotifications: (state) => state.user?.indirect_data?.notifications ?? [],
+        getNotifications: (state) => state.notifications ?? state.user?.indirect_data?.notifications ?? [],
         getPhoto: (state) => state.user?.photo_file_url || '@/assets/imgs/plugs/userplug.jpg',
         getFio: (state) => (state.user?.last_name || '') + ' ' + (state.user?.name || '') + ' ' + (state.user?.second_name || ''),
         getNoRoots: (state) => !state.roots.EditorAdmin && !state.roots.EditorModer.length && !state.roots.PeerAdmin && !state.roots.PeerModer && !state.roots.peerCurator.length && !state.roots.VisionAdmin,

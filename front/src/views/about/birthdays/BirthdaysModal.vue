@@ -40,15 +40,7 @@
                 Удалить
               </button>
             </div>
-            <button
-              v-if="canDeleteComment(congratulation)"
-              class="birthday__comments__delete"
-              type="button"
-              :disabled="deletingCommentIndex == index"
-              @click="deleteComment(congratulation, index)"
-            >
-              {{ deletingCommentIndex == index ? "Удаление..." : "Удалить" }}
-            </button>
+
           </div>
         </div>
         <div v-else class="birthday__comments__empty">Поздравлений пока нет</div>

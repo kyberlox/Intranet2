@@ -1,4 +1,7 @@
 export interface IUserNotification {
+    id: string;
+    created_at?: string;
+    read_at?: string | null;
     type: string;
     title: string;
     text: string;

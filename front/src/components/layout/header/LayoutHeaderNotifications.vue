@@ -14,21 +14,30 @@
         </button>
         <section v-if="isOpen" :id="panelId" class="header-notifications__panel" aria-label="Уведомления">
             <h2 class="header-notifications__heading">Уведомления</h2>
+            <button v-if="notifications.length" type="button" class="header-notifications__action"
+                :disabled="isLoading || isDeleting" @click="deleteNotifications()">Удалить все</button>
+            <p v-if="error" class="header-notifications__error" role="alert">{{ error }}</p>
+            <p v-if="isLoading" class="header-notifications__empty" role="status">Загрузка уведомлений…</p>
             <ul v-if="notifications.length" class="header-notifications__list">
-                <li v-for="(notification, index) in notifications" :key="index" class="header-notifications__item">
+                <li v-for="notification in notifications" :key="notification.id" class="header-notifications__item">
                     <h3 class="header-notifications__title">{{ notification.title }}</h3>
                     <p class="header-notifications__text">{{ notification.text }}</p>
+                    <button type="button" class="header-notifications__action"
+                        :disabled="isLoading || isDeleting || !notification.id"
+                        :aria-label="`Удалить уведомление: ${notification.title}`"
+                        @click="deleteNotifications(notification.id)">Удалить</button>
                 </li>
             </ul>
-            <p v-else class="header-notifications__empty">Уведомлений пока нет</p>
+            <p v-else-if="!isLoading && !error" class="header-notifications__empty">Уведомлений пока нет</p>
         </section>
     </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref, useId } from 'vue';
+import { computed, defineComponent, onMounted, onBeforeUnmount, ref, useId } from 'vue';
 import { onClickOutside } from '@vueuse/core';
 import { useUserData } from '@/stores/userData';
+import Api from '@/utils/Api';
 
 export default defineComponent({
     setup() {
@@ -38,6 +47,47 @@ export default defineComponent({
         const container = ref<HTMLElement | null>(null);
         const trigger = ref<HTMLButtonElement | null>(null);
         const panelId = useId();
+        const isLoading = ref(true);
+        const isDeleting = ref(false);
+        const error = ref('');
+        const controller = new AbortController();
+        const authKey = userData.getAuthKey;
+        const isCurrentUser = () => !controller.signal.aborted && userData.getAuthKey === authKey;
+
+        onMounted(async () => {
+            try {
+                const data = await Api.get('users/notifications', null, controller.signal);
+                if (!isCurrentUser()) return;
+                if (!Array.isArray(data)) throw new Error('Invalid notifications response');
+                userData.setNotifications(data);
+            } catch {
+                if (isCurrentUser()) error.value = 'Не удалось загрузить уведомления.';
+            } finally {
+                isLoading.value = false;
+            }
+        });
+
+        onBeforeUnmount(() => controller.abort());
+
+        async function deleteNotifications(id?: string) {
+            if (isLoading.value || isDeleting.value) return;
+            isDeleting.value = true;
+            error.value = '';
+            try {
+                const response = await Api.delete(id === undefined
+                    ? 'users/notifications'
+                    : `users/notifications/${encodeURIComponent(id)}`);
+                if (!isCurrentUser()) return;
+                if (response.data?.status !== true) throw new Error('Notification deletion failed');
+                userData.setNotifications(id === undefined
+                    ? []
+                    : notifications.value.filter(notification => notification.id !== id));
+            } catch {
+                if (isCurrentUser()) error.value = 'Не удалось удалить уведомления. Попробуйте ещё раз.';
+            } finally {
+                isDeleting.value = false;
+            }
+        }
 
         onClickOutside(container, () => { isOpen.value = false; });
 
@@ -46,7 +96,8 @@ export default defineComponent({
             trigger.value?.focus();
         }
 
-        return { notifications, isOpen, container, trigger, panelId, closeAndFocus };
+        return { notifications, isOpen, container, trigger, panelId, closeAndFocus,
+            isLoading, isDeleting, error, deleteNotifications };
     },
 });
 </script>
@@ -111,6 +162,19 @@ export default defineComponent({
     }
 
     &__heading { margin: 0; padding: 16px; font-size: 18px; }
+    &__action {
+        margin: 8px 16px;
+        padding: 4px 8px;
+        border: 1px solid currentColor;
+        border-radius: 6px;
+        color: var(--emk-brand-color);
+        background: transparent;
+        font-size: 13px;
+        cursor: pointer;
+        &:disabled { opacity: 0.5; cursor: default; }
+    }
+    &__item &__action { margin: 12px 0 0; }
+    &__error { padding: 0 16px; color: var(--bs-danger, #dc3545); font-size: 14px; }
     &__list { list-style: none; padding: 0; margin: 0; }
     &__item { padding: 16px; border-top: 1px solid var(--bs-border-color, #ddd); }
     &__title { margin: 0 0 6px; font-size: 15px; font-weight: 600; }

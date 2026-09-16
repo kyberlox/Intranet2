@@ -68,6 +68,7 @@ export const useUserData = defineStore('userData', {
         getGptRoot: (state) => state.roots.GPT_gen_access || state.roots.EditorAdmin,
         getNeedAdminLink: (state) => Boolean(state.roots.EditorAdmin || state.roots.PeerAdmin || state.roots.VisionAdmin || state.roots.EditorModer?.length || state.roots.PeerModer || state.roots.peerCurator?.length),
         getUser: (state) => state.user,
+        getNotifications: (state) => state.user?.indirect_data?.notifications ?? [],
         getPhoto: (state) => state.user?.photo_file_url || '@/assets/imgs/plugs/userplug.jpg',
         getFio: (state) => (state.user?.last_name || '') + ' ' + (state.user?.name || '') + ' ' + (state.user?.second_name || ''),
         getNoRoots: (state) => !state.roots.EditorAdmin && !state.roots.EditorModer.length && !state.roots.PeerAdmin && !state.roots.PeerModer && !state.roots.peerCurator.length && !state.roots.VisionAdmin,

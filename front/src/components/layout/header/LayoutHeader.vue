@@ -89,6 +89,7 @@
 
                     <div
                          class="order-2 order-lg-3 col-4 col-md-5 col-lg-2 mt-3 mb-4 mt-md-0 mb-md-0 d-flex align-items-center justify-content-end header__right-top">
+                        <LayoutHeaderNotifications />
                         <div class="header__user"
                              v-if="userFio"
                              @click="visibleSidebar = true">
@@ -147,6 +148,7 @@ import LayoutHeaderPointsModal from "./LayoutHeaderPointsModal.vue";
 
 import { featureFlags } from "@/assets/static/featureFlags";
 import LayoutHeaderModeChanger from "./LayoutHeaderModeChanger.vue";
+import LayoutHeaderNotifications from "./LayoutHeaderNotifications.vue";
 
 export default defineComponent({
     components: {
@@ -155,7 +157,8 @@ export default defineComponent({
         SearchModal,
         SlotModal,
         LayoutHeaderPointsModal,
-        LayoutHeaderModeChanger
+        LayoutHeaderModeChanger,
+        LayoutHeaderNotifications
     },
     setup() {
         const userData = useUserData();

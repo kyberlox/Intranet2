@@ -1,3 +1,11 @@
+export interface IUserNotification {
+    type: string;
+    title: string;
+    text: string;
+    payload: Record<string, unknown>;
+    [key: string]: unknown;
+}
+
 export interface IUser {
     id: number,
     uuid: string,
@@ -13,6 +21,7 @@ export interface IUser {
     personal_gender: string,
     personal_birthday: string,
     indirect_data: {
+        notifications?: IUserNotification[] | null,
         id: number,
         title: string,
         work_www: string,

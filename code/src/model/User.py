@@ -833,10 +833,20 @@ class User:
 
             elif 'congratulations' in celebrant_info['indirect_data']:
                 celebrant_info['indirect_data']['congratulations'].append(comment_info)
-            
+
             has_added = await self.UserModel.upload_comment_to_celebrant(session, self.id, celebrant_info)
             if has_added:
-                return True 
+                from ..services.Notifications import send_user_notification
+                await send_user_notification(
+                    user_id=int(data['celebrant_id']),
+                    type_="congratulation",
+                    title="Вас поздравили!",
+                    text=f"{comment_info['user_fio']}: {data['comment']}",
+                    payload={"from_user": comment_info['user_id'], "comment": data['comment']},
+                    session=session,
+                )
+                await session.commit()
+                return True
             return False
         except Exception as e:
             return LogsMaker().error_message(f'Ошибка при создании комментария:{e}')
@@ -868,6 +878,22 @@ class User:
             return False
         except Exception as e:
             return LogsMaker().error_message(f'Ошибка при удалении комментария:{e}')
+
+    # ==================== УВЕДОМЛЕНИЯ ====================
+    async def get_notifications(self, session, mark_read: bool = True):
+        return await self.UserModel.get_notifications(
+            user_id=self.id, session=session, mark_read=mark_read
+        )
+
+    async def delete_notification(self, notification_id: str, session):
+        return await self.UserModel.delete_notification(
+            user_id=self.id, notification_id=notification_id, session=session
+        )
+
+    async def delete_all_notifications(self, session):
+        return await self.UserModel.delete_all_notifications(
+            user_id=self.id, session=session
+        )
 
 @register_task("update_inf_from_b24")
 # Обновляет данные конкретного пользователя
@@ -964,6 +990,14 @@ async def update_inf_from_b24(user_id):
 async def get_user_id_by_session_id(request: Request) -> int:
     from ..base.RedisStorage import RedisStorage
     """Получение текущей сессии пользователя"""
+
+    # DEV: на localhost разрешаем без сессии, user_id можно передать через ?user_id=N
+    host = request.url.hostname or ""
+    if host in ("localhost", "127.0.0.1"):
+        qp_user_id = request.query_params.get("user_id")
+        if qp_user_id:
+            return int(qp_user_id)
+
     # Ищем session_id в куках или заголовках
     session_id = request.cookies.get("session_id")
     
@@ -1295,8 +1329,7 @@ async def delete_congratulation_from_celeba(data = Body(), session: AsyncSession
         return await User().delete_congratulation(data, session)
     # elif int(user_id) != data['commentator_id']:
     #     return LogsMaker().warning_message(f'Нельзя удалить чужой комментарий')
-    return LogsMaker().warning_message(f'Нельзя удалить чужой комментарий') 
-
+    return LogsMaker().warning_message(f'Нельзя удалить чужой комментарий')
 
 # from fastapi import UploadFile, File
 # @users_router.post("/process-files", tags=["Пользователь"])
@@ -1304,14 +1337,14 @@ async def delete_congratulation_from_celeba(data = Body(), session: AsyncSession
 #     file: UploadFile = File(...),
 #     db: AsyncSession = Depends(get_async_db)  # замените на вашу зависимость
 # ):
-    """
-    Обрабатывает XLS файл:
-    - Парсит ФИО из колонки D (начиная с 4 строки)
-    - Ищет пользователей в БД
-    - Получает данные из Битрикс
-    - Добавляет результат в колонки G и H
-    - Возвращает обновленный файл
-    """
+#    """
+#    Обрабатывает XLS файл:
+#    - Парсит ФИО из колонки D (начиная с 4 строки)
+#    - Ищет пользователей в БД
+#    - Получает данные из Битрикс
+#    - Добавляет результат в колонки G и H
+#    - Возвращает обновленный файл
+#    """
     from fastapi.responses import StreamingResponse
     from sqlalchemy import select
     import pandas as pd
@@ -1550,3 +1583,119 @@ async def delete_congratulation_from_celeba(data = Body(), session: AsyncSession
     
     except Exception as e:
         raise HTTPException(500, f"Ошибка обработки файла: {str(e)}")
+
+@users_router.get("/notifications", tags=["Пользователь", "Уведомления"])
+async def get_my_notifications(
+    session: AsyncSession = Depends(get_async_db),
+    user_id=Depends(get_user_id_by_session_id),
+    ):
+    """
+    Возвращает все уведомления текущего пользователя.
+    Непрочитанные помечаются как прочитанные (read_at = now()).
+    Уже прочитанные таймер не сбрасывают — удалятся через 24 ч после первого прочтения.
+    """
+    notifs = await User(id=int(user_id)).get_notifications(session=session, mark_read=True)
+    await session.commit()
+    return notifs
+
+@users_router.delete("/notifications/{notification_id}", tags=["Пользователь", "Уведомления"])
+async def delete_my_notification(
+    notification_id: str,
+    session: AsyncSession = Depends(get_async_db),
+    user_id=Depends(get_user_id_by_session_id),
+    ):
+    """Удаляет конкретное уведомление по id (не дожидаясь суточного таймера)."""
+    ok = await User(id=int(user_id)).delete_notification(
+        notification_id=notification_id, session=session
+    )
+    await session.commit()
+    return {"status": ok}
+
+@users_router.delete("/notifications", tags=["Пользователь", "Уведомления"])
+async def delete_all_my_notifications(
+    session: AsyncSession = Depends(get_async_db),
+    user_id=Depends(get_user_id_by_session_id),
+    ):
+    """Удаляет ВСЕ уведомления пользователя (не дожидаясь суточного таймера)."""
+    ok = await User(id=int(user_id)).delete_all_notifications(session=session)
+    await session.commit()
+    return {"status": ok}
+
+@users_router.post("/notifications/broadcast", tags=["Пользователь", "Уведомления"])
+async def broadcast_notifications(
+    data=Body(),
+    session: AsyncSession = Depends(get_async_db),
+    user_id=Depends(get_user_id_by_session_id),
+):
+    """
+    Массовая рассылка уведомлений (только для PeerAdmin).
+
+    Body:
+    {
+      "user_ids": [1,2,3],          // опционально
+      "department_ids": [96,208],   // опционально
+      "all": false,                 // опционально, всем активным
+      "type": "custom",
+      "title": "Заголовок",
+      "text": "Тело уведомления",
+      "payload": {}
+    }
+    """
+    from ..base.pSQL.objects.RootsModel import RootsModel
+    from ..base.pSQL.models.User import User as UserTable
+    from sqlalchemy import select as sa_select
+    from ..services.Notifications import send_user_notification
+
+    # 1) Права
+    root_init = RootsModel(user_uuid=int(user_id))
+    token = await root_init.get_token_by_uuid(session=session)
+    roots = await root_init.token_processing_for_peer(token)
+    if not roots.get("PeerAdmin"):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only PeerAdmin can broadcast notifications",
+        )
+
+    # 2) Получатели
+    recipients = set(int(x) for x in (data.get("user_ids") or []))
+
+    if data.get("all"):
+        stmt = sa_select(UserTable.id).where(UserTable.active == True)
+        res = await session.execute(stmt)
+        recipients = set(res.scalars().all())
+    elif data.get("department_ids"):
+        dept_ids = set(int(x) for x in data["department_ids"])
+        stmt = sa_select(UserTable.id, UserTable.indirect_data).where(UserTable.active == True)
+        res = await session.execute(stmt)
+        for row in res.all():
+            uf_dep = (row[1] or {}).get("uf_department") or []
+            if any(isinstance(d, int) and d in dept_ids for d in uf_dep):
+                recipients.add(int(row[0]))
+
+    if not recipients:
+        return {"status": False, "reason": "no recipients", "delivered": 0, "failed": []}
+
+    # 3) Раскладка
+    type_ = data.get("type") or "custom"
+    title = data.get("title") or "Уведомление"
+    text = data.get("text") or ""
+    payload = data.get("payload") or {}
+
+    delivered = 0
+    failed = []
+    for uid in recipients:
+        ok = await send_user_notification(
+            user_id=uid,
+            type_=type_,
+            title=title,
+            text=text,
+            payload=payload,
+            session=session,
+        )
+        if ok:
+            delivered += 1
+        else:
+            failed.append(uid)
+
+    await session.commit()
+    return {"status": True, "delivered": delivered, "failed": failed}

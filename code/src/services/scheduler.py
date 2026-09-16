@@ -8,6 +8,7 @@ from ..model.User import TASK_HANDLERS
 # Импорт aioscheduler
 from aioscheduler import TimedScheduler
 
+from .Notifications import send_user_notification, notify_about_points  # noqa: F401
 from .LogsMaker import LogsMaker
 from ..base.pSQL.objects.App import get_async_db, AsyncSessionLocal
 # from ..model.User import User
@@ -224,6 +225,14 @@ async def send_birthday_notifications(user_ids: List[int]):
                 }
                 send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=db)
                 if send_point['status'] == 'info':
+                    await send_user_notification(
+                        user_id=int(user_id),
+                        type_="birthday",
+                        title="С днём рождения!",
+                        text="Вам начислены поздравительные баллы.",
+                        payload={"activity_id": 1},
+                        session=db,
+                    )
                     user_info = await User(id=int(user_id)).search_by_id(session=db)
                     if 'email' in user_info and user_info['email']:
                         data = {'sender': user_info['email']}
@@ -346,6 +355,24 @@ async def handle_inactive_users(user_ids: List[int]):
     
     # Здесь можно добавить логику для неактивных пользователей
     # Например, отправка напоминания или изменение статуса
+
+# ==================== УВЕДОМЛЕНИЯ ====================
+
+async def cleanup_notifications_task():
+    """
+    Фоновая задача: удаляет прочитанные уведомления старше 24 часов.
+    Запускается раз в час.
+    """
+    from ..base.pSQL.objects.App import AsyncSessionLocal
+    from ..base.pSQL.objects.UserModel import UserModel
+    logger = LogsMaker()
+    try:
+        async with AsyncSessionLocal() as db:
+            affected = await UserModel().cleanup_read_notifications(session=db, ttl_hours=24)
+            if affected:
+                logger.info_message(f"Очищены прочитанные уведомления у {affected} пользователей")
+    except Exception as e:
+        logger.error_message(f"Ошибка в cleanup_notifications_task: {e}")
 
 # ==================== ОСНОВНАЯ ЗАДАЧА ====================
 async def weekly_check():
@@ -641,6 +668,11 @@ class AioSchedulerManager:
                 weekly_job = self.schedule_weekly_at_time(weekly_check, days=6)
 
                 self.redis_worker_task = asyncio.create_task(self._redis_worker())
+
+            # 4. Очистка прочитанных уведомлений — раз в час (работает на любом окружении)
+            notif_cleanup_job_id = self.schedule_periodic_task(
+                cleanup_notifications_task, interval_seconds=3600
+            )
             
             # 3. Тестовая задача каждую минуту (для мониторинга)
             # test_job_id = self.schedule_periodic_task(test_task, interval_seconds=60)

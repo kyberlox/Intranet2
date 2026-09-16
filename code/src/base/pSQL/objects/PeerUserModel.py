@@ -100,11 +100,23 @@ class PeerUserModel:
                     )
 
                     session.add(add_history)
+
+                    from ..services.Notifications import send_user_notification
+                    await send_user_notification(
+                        user_id=int(uuid_to),
+                        type_="points_confirmed",
+                        title="Баллы начислены",
+                        text=f"Вам подтверждено начисление баллов: {description}",
+                        payload={"action_id": action_id, "points": active_info.coast},
+                        session=session,
+                    )
+
                     await session.commit()
                     return True
                 else:
-                    return LogsMaker().info_message(f"Активности с id = {action_id} не существует или не требует подтверждения")
-            return False
+                    return LogsMaker().info_message(
+                        f"Активности с id = {action_id} не существует или не требует подтверждения")
+                return False
             
         except Exception as e:
             await session.rollback()
@@ -139,6 +151,16 @@ class PeerUserModel:
                     )
 
                     session.add(add_history)
+
+                    from ..services.Notifications import send_user_notification
+                    await send_user_notification(
+                        user_id=int(ActiveUsers_info[1]),
+                        type_="points_rejected",
+                        title="Баллы отклонены",
+                        text=f"Отклонено начисление баллов: {ActiveUsers_info[0]}",
+                        payload={"action_id": action_id},
+                        session=session,
+                    )
                     await session.commit()
                     return True
                 else:
@@ -388,11 +410,32 @@ class PeerUserModel:
                         date_time=datetime.now()
                     )
 
-                    session.add(add_history)
-                    await session.commit()
-                    return LogsMaker().info_message(f"Активность успешно отправлена пользователю с id = {uuid_to}")
-                else:
-                    return LogsMaker().warning_message(f"Недостаточно прав для отправки активности")
+                    if flag:
+                        add_history = self.PeerHistory(
+                            user_uuid=uuid_from,
+                            user_to=uuid_to,
+                            active_info=description,
+                            active_coast=value,
+                            active_id=new_id,
+                            info_type='activity',
+                            date_time=datetime.now()
+                        )
+
+                        session.add(add_history)
+
+                        from ..services.Notifications import notify_about_points
+                        await notify_about_points(
+                            user_id=uuid_to,
+                            activity_id=activities_id,
+                            description=description,
+                            points=value,
+                            session=session,
+                        )
+
+                        await session.commit()
+                        return LogsMaker().info_message(f"Активность успешно отправлена пользователю с id = {uuid_to}")
+                    else:
+                        return LogsMaker().warning_message(f"Недостаточно прав для отправки активности")
                     
         except Exception as e:
             await session.rollback()
@@ -632,8 +675,17 @@ class PeerUserModel:
                         info_type='activity',
                         date_time=datetime.now()
                     )
-                    
+
                     session.add(add_history)
+
+                    from ..services.Notifications import notify_about_points
+                    await notify_about_points(
+                        user_id=uuid_to,
+                        activity_id=activities_id,
+                        description=description,
+                        points=value,
+                        session=session,
+                    )
                 # await session.commit()
                 return LogsMaker().info_message(f"Активность успешно отправлена пользователю с id = {uuid_to}")
                 
@@ -943,9 +995,20 @@ class PeerUserModel:
                     stmt_user = select(self.Roots).where(self.Roots.user_uuid == user_uuid)
                     result_user = await session.execute(stmt_user)
                     user_info = result_user.scalar_one_or_none()
-                    
+
                     if user_info:
                         user_info.user_points = user_info.user_points + points
+                        await session.commit()
+
+                        from ..services.Notifications import send_user_notification
+                        await send_user_notification(
+                            user_id=int(user_uuid),
+                            type_="points_refund",
+                            title="Возврат баллов",
+                            text=f"Вам возвращено {points} баллов",
+                            payload={"points": points},
+                            session=session,
+                        )
                         await session.commit()
                         return True
             
@@ -1196,6 +1259,17 @@ class PeerUserModel:
                 )
 
                 session.add(add_history)
+
+                from ..services.Notifications import send_user_notification
+                _extra = f" Сообщение: {message}" if message else ""
+                await send_user_notification(
+                    user_id=int(uuid_to),
+                    type_="points_transfer",
+                    title="Вам перевели баллы",
+                    text=f"Пользователь ID {uuid_from} перевёл вам {how_match} баллов.{_extra}",
+                    payload={"from_user": uuid_from, "points": how_match},
+                    session=session,
+                )
                 await session.commit()
                 return LogsMaker().info_message(f"Перевод от пользователя с id = {uuid_from} на сумму баллов = {how_match}, успешно отправлен пользователю с id = {uuid_to}")
         except Exception as e:

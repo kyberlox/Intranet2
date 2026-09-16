@@ -101,7 +101,7 @@ class PeerUserModel:
 
                     session.add(add_history)
 
-                    from ..services.Notifications import send_user_notification
+                    from src.services.Notifications import send_user_notification
                     await send_user_notification(
                         user_id=int(uuid_to),
                         type_="points_confirmed",
@@ -152,7 +152,7 @@ class PeerUserModel:
 
                     session.add(add_history)
 
-                    from ..services.Notifications import send_user_notification
+                    from src.services.Notifications import send_user_notification
                     await send_user_notification(
                         user_id=int(ActiveUsers_info[1]),
                         type_="points_rejected",
@@ -410,32 +410,21 @@ class PeerUserModel:
                         date_time=datetime.now()
                     )
 
-                    if flag:
-                        add_history = self.PeerHistory(
-                            user_uuid=uuid_from,
-                            user_to=uuid_to,
-                            active_info=description,
-                            active_coast=value,
-                            active_id=new_id,
-                            info_type='activity',
-                            date_time=datetime.now()
-                        )
+                    session.add(add_history)
 
-                        session.add(add_history)
+                    from src.services.Notifications import notify_about_points
+                    await notify_about_points(
+                        user_id=uuid_to,
+                        activity_id=activities_id,
+                        description=description,
+                        points=value,
+                        session=session,
+                    )
 
-                        from ..services.Notifications import notify_about_points
-                        await notify_about_points(
-                            user_id=uuid_to,
-                            activity_id=activities_id,
-                            description=description,
-                            points=value,
-                            session=session,
-                        )
-
-                        await session.commit()
-                        return LogsMaker().info_message(f"Активность успешно отправлена пользователю с id = {uuid_to}")
-                    else:
-                        return LogsMaker().warning_message(f"Недостаточно прав для отправки активности")
+                    await session.commit()
+                    return LogsMaker().info_message(f"Активность успешно отправлена пользователю с id = {uuid_to}")
+                else:
+                    return LogsMaker().warning_message(f"Недостаточно прав для отправки активности")
                     
         except Exception as e:
             await session.rollback()
@@ -678,7 +667,7 @@ class PeerUserModel:
 
                     session.add(add_history)
 
-                    from ..services.Notifications import notify_about_points
+                    from src.services.Notifications import notify_about_points
                     await notify_about_points(
                         user_id=uuid_to,
                         activity_id=activities_id,
@@ -1000,7 +989,7 @@ class PeerUserModel:
                         user_info.user_points = user_info.user_points + points
                         await session.commit()
 
-                        from ..services.Notifications import send_user_notification
+                        from src.services.Notifications import send_user_notification
                         await send_user_notification(
                             user_id=int(user_uuid),
                             type_="points_refund",
@@ -1260,7 +1249,7 @@ class PeerUserModel:
 
                 session.add(add_history)
 
-                from ..services.Notifications import send_user_notification
+                from src.services.Notifications import send_user_notification
                 _extra = f" Сообщение: {message}" if message else ""
                 await send_user_notification(
                     user_id=int(uuid_to),

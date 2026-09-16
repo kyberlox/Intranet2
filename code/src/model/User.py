@@ -925,7 +925,7 @@ async def update_inf_from_b24(user_id):
                 await UserSearchModel().delete_user_from_el_index(user_id=user_id)
                 return None
 
-            if (b24_depart := usr_data.get('UF_DEPARTMENT')) and (psql_depart)
+            # if (b24_depart := usr_data.get('UF_DEPARTMENT')) and (psql_depart)
 
             if psql_user['indirect_data']['uf_department'] != usr_data['UF_DEPARTMENT']:
                 await user_class.put_user_to_vis(session, psql_user)

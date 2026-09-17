@@ -1,3 +1,13 @@
+export interface INotificationBroadcast {
+    user_ids?: number[];
+    department_ids?: number[];
+    all?: boolean;
+    type: string;
+    title: string;
+    text: string;
+    payload: Record<string, unknown>;
+}
+
 export interface IAuth {
     login: string
     password: string

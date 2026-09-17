@@ -1,5 +1,5 @@
 <template>
-<AdminEditInput :item="{ name: 'ID предприятия', disabled: 'true', value: pickedId || idValue || '' }"
+<AdminEditInput v-if="!multiple" :item="{ name: 'ID предприятия', disabled: 'true', value: pickedId || idValue || '' }"
                 :placeholder="`Нажмите 'добавить' и выберите предприятие, чтобы сохранить его id `" />
 <div class="primary-button"
      @click="showSearchModal = true">
@@ -7,21 +7,20 @@
 </div>
 <SlotModal v-if="showSearchModal"
            @close="showSearchModal = false">
-    <AdminEditInput v-if="!pickedId"
+    <AdminEditInput v-if="multiple || !pickedId"
                     @pick="(value: string) => (searchQuery = value)"
                     :item="{ name: 'Поиск по структуре' }"
                     :placeholder="'Выберите отдел, его данные сохранятся'" />
 
     <SearchList :searchList="departmentList"
                 :type="'departments'"
-                @pick="(user: IUserSearch) => handleDepIdPick(user)" />
+                @pick="(department: IAreaDepartment) => handleDepIdPick(department)" />
 </SlotModal>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref, onUnmounted } from 'vue'
 import AdminEditInput from './AdminEditInput.vue'
-import type { IUserSearch } from '@/interfaces/IEntities'
 import { watchDebounced } from '@vueuse/core'
 import Api from '@/utils/Api'
 import { handleApiError } from '@/utils/apiResponseCheck'
@@ -43,6 +42,10 @@ export default defineComponent({
         SearchList
     },
     props: {
+        multiple: {
+            type: Boolean,
+            default: false
+        },
         type: {
             type: String
         },
@@ -50,7 +53,7 @@ export default defineComponent({
             type: Number
         }
     },
-    name: 'adminEditUserSearch',
+    name: 'adminEditAreaSearch',
     emits: ['handleDepartmentPick'],
     setup(props, { emit }) {
         const abortController = new AbortController();
@@ -67,6 +70,10 @@ export default defineComponent({
             pickedId.value = String(dep.id);
             emit('handleDepartmentPick', dep.id, dep.name);
             showSearchModal.value = false;
+            if (props.multiple) {
+                searchQuery.value = '';
+                departmentList.value = [];
+            }
         }
 
         watchDebounced(

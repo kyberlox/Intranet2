@@ -7,6 +7,7 @@ import type { IPointsForm, INewActivityData, IPurchaseMerchData } from '@/interf
 import type { IPostCardMsg, INeuroChat } from '@/interfaces/IEntities';
 import type { IPostInner } from '@/components/tools/common/PostInner.vue';
 import { type ISortItems } from '@/interfaces/IEntities';
+import type { INotificationBroadcast } from '@/interfaces/IPostFetch';
 
 const defaultUrl = (import.meta.env.VITE_API_URL).replace('/api', '');
 const VITE_API_URL = import.meta.env.VITE_API_URL
@@ -64,6 +65,7 @@ export default class Api {
         url: string,
         data?:
             | IAuth
+            | INotificationBroadcast
             | IPostIdea
             | IPostInner
             | FormData

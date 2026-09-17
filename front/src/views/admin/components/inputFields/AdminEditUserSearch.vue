@@ -99,10 +99,12 @@ export default defineComponent({
                 props.type == 'search_by_uuids' ? 'handleUsersPick' : 'handleUserPick',
                 type == 'remove' ? null : user.id ? user.id : user.user_id,
                 (props.field == 'implementer' || props.field == 'integrator') ? props.field : 'base',
+                user,
             )
             pickedUser.value = false
             showSearchModal.value = false
             usersList.value.length = 0
+            searchQuery.value = ''
         }
 
         watchDebounced(

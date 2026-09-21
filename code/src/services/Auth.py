@@ -1000,5 +1000,5 @@ def generate_redirect(request: Request, session_data: Dict[str, Any] = Depends(g
     user_info = session_data.get('user_info')
     # if int(user_info['ID']) not in ADMIN_UUIDS:
         # raise HTTPException(status_code=403, detail='Доступ закрыт')
-    redirect_url = f"http://agrofconf.emk.org.ru/api/auth/redirect?session_id={session_id}"
+    redirect_url = f"https://agrofconf.emk.ru/api/auth/redirect?session_id={session_id}"
     return RedirectResponse(redirect_url)

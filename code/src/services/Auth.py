@@ -993,7 +993,9 @@ async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
     return RedirectResponse(url=redirect_uri, status_code=302)
 
 @auth_router.get("/argconf")
-def generate_redirect(session_data: Dict[str, Any] = Depends(get_current_session)):   # session_id из куки текущего пользователя
+def generate_redirect(request: Request, session_data: Dict[str, Any] = Depends(get_current_session)):   # session_id из куки текущего пользователя
+    referer = request.headers.get("referer")
+    print('ТУКУТУКТУК', referer)
     session_id = session_data["session_id"]
     user_info = session_data.get('user_info')
     # if int(user_info['ID']) not in ADMIN_UUIDS:

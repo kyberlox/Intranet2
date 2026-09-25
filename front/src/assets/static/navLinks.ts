@@ -77,6 +77,11 @@ export const mainMenuPoints: MainMenuPoints = [
         name: 'Сервисы',
         subPoints: [
             {
+                id: 2.0,
+                name: 'Агрегатор Конфигураторов',
+                href:'argconf-auth',
+            },
+            {
                 id: 2.1,
                 name: 'Подбор оборудования (ТЭП)',
                 href: 'selectionTep',
@@ -126,12 +131,6 @@ export const mainMenuPoints: MainMenuPoints = [
                 name: 'Сервис сбора контактов с выставок',
                 href:'https://intranet.emk.ru/api/auth_router/exhibition',
                 visibility:57
-            },
-            {
-                id: 2.10,
-                name: 'Аггрегатор Конфигураторов',
-                href: 'https://agrofconf.emk.ru/api/auth/redirect',
-                includeSessionId: true,
             }
         ],
     },

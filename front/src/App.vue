@@ -8,6 +8,7 @@
         <SnowFlakes v-if="[12, 1, 2].includes(new Date().getMonth() + 1)" />
         <div v-if="isLogin">
             <LayoutHeader />
+            <LayoutAnnouncements :announcements="announcements" />
             <main>
                 <div class="container-fluid">
                     <div class="row main-layout">
@@ -37,6 +38,7 @@ import { defineComponent, computed, watch, onBeforeMount, ref, nextTick } from "
 import { RouterView, useRoute } from "vue-router";
 import Toast from 'primevue/toast';
 import LayoutHeader from "./components/layout/header/LayoutHeader.vue";
+import LayoutAnnouncements, { type LayoutAnnouncement } from "./components/layout/LayoutAnnouncements.vue";
 import Sidebar from "./components/layout/sidebars/RightSidebar.vue";
 import Breadcrumbs from "./components/layout/Breadcrumbs.vue";
 import AuthPage from "@/views/user/AuthPage.vue";
@@ -55,6 +57,7 @@ export default defineComponent({
     name: "app-layout",
     components: {
         LayoutHeader,
+        LayoutAnnouncements,
         Sidebar,
         RouterView,
         AuthPage,
@@ -75,6 +78,7 @@ export default defineComponent({
         const isLoading = ref(true);
         const isRefreshing = ref(false);
         const routerViewKey = ref(0);
+        const announcements = ref<LayoutAnnouncement[]>([]);
 
         const handleRefresh = () => {
             return new Promise<void>((resolve) => {
@@ -152,6 +156,7 @@ export default defineComponent({
             isLoading,
             isRefreshing,
             routerViewKey,
+            announcements,
             handleRefresh,
         }
     }

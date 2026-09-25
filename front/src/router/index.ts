@@ -3,6 +3,7 @@ import { useUserData } from '@/stores/userData';
 import Api from '@/utils/Api';
 import { nextTick } from 'vue';
 import Cookies from 'js-cookie';
+import { featureFlags } from '@/assets/static/featureFlags';
 
 const oauthDomen = import.meta.env.VITE_OAUTH_DOMEN;
 const oauthClient = import.meta.env.VITE_OAUTH_CLIENT_ID;
@@ -594,6 +595,19 @@ const router = createRouter({
                 } else {
                     next({ name: 'home' })
                 };
+            },
+        },
+        {
+            path: '/admin/notifications',
+            name: 'notificationBroadcast',
+            component: () => import('@/views/admin/notifications/NotificationBroadcast.vue'),
+            meta: {
+                breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Список редактора', route: 'admin' }]
+            },
+            beforeEnter: async () => {
+                if (!featureFlags.notificationBroadcast) return { name: 'home' };
+                const isAdmin = await checkIsAdmin();
+                return isAdmin && useUserData().getUserRoots.PeerAdmin ? true : { name: 'home' };
             },
         },
         {

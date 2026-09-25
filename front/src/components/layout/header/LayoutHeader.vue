@@ -219,7 +219,13 @@ export default defineComponent({
 
             if (/^https?:\/\//i.test(point.href)) {
                 isMobileMenuOpen.value = false;
-                globalThis.location.href = point.href;
+                const url = new URL(point.href);
+
+                if (point.includeSessionId) {
+                    url.searchParams.set('session_id', userData.getAuthKey);
+                }
+
+                globalThis.location.href = url.toString();
                 return;
             }
 

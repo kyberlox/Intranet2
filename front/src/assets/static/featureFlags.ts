@@ -1,4 +1,5 @@
 export const featureFlags = {
+    notificationBroadcast: true,
     pointsSystem: true,
     pointsModeration: false,
     visibleArea: true,
@@ -6,4 +7,3 @@ export const featureFlags = {
     pagination: true,
     transactions:true
 }
-

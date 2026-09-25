@@ -126,6 +126,12 @@ export const mainMenuPoints: MainMenuPoints = [
                 name: 'Сервис сбора контактов с выставок',
                 href:'https://intranet.emk.ru/api/auth_router/exhibition',
                 visibility:57
+            },
+            {
+                id: 2.10,
+                name: 'Аггрегатор Конфигураторов',
+                href: 'https://agrofconf.emk.ru/api/auth/redirect',
+                includeSessionId: true,
             }
         ],
     },

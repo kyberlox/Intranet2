@@ -7,6 +7,11 @@ interface IAdminSections {
 
 export const staticAdminSections: IAdminSections[] = [
     {
+        id: 5,
+        title: 'Уведомления',
+        nav: [{ name: 'Рассылка уведомлений', id: 'notificationBroadcast' }]
+    },
+    {
         id: 1, title: 'Разделы', nav: []
     },
     {

@@ -1,0 +1,71 @@
+.layout-announcement {
+    --announcement-accent: #8f969e;
+    --announcement-surface: #f8f9fa;
+    --announcement-border: #e9ecef;
+
+    padding: 9px 20px 11px;
+    border-bottom: 1px solid var(--announcement-border);
+    background: var(--announcement-surface);
+    color: #30343a;
+    text-align: center;
+
+    &--info {
+        --announcement-accent: #417db8;
+        --announcement-surface: #f5f9ff;
+        --announcement-border: #dbe9f7;
+    }
+
+    &--success {
+        --announcement-accent: #3e9060;
+        --announcement-surface: #f5fbf7;
+        --announcement-border: #d7ebde;
+    }
+
+    &--warning {
+        --announcement-accent: #be6209;
+        --announcement-surface: #fff7ef;
+        --announcement-border: #f0ddc6;
+    }
+
+    &--error {
+        --announcement-accent: #c54b44;
+        --announcement-surface: #fff6f5;
+        --announcement-border: #f0d8d4;
+    }
+
+    &__message-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        max-width: 960px;
+        margin: 0 auto;
+    }
+
+    &__warning-icon {
+        flex: 0 0 auto;
+        width: 20px;
+        height: 20px;
+        stroke: var(--announcement-accent);
+    }
+
+    &__title {
+        max-width: 960px;
+        margin: 0 auto 2px;
+        font-size: 14px;
+        font-weight: 700;
+        line-height: 1.4;
+        color: inherit;
+    }
+
+    &__message {
+        min-width: 0;
+        margin: 0;
+        font-size: 15px;
+        font-weight: 500;
+        line-height: 1.45;
+        white-space: pre-line;
+        overflow-wrap: anywhere;
+        color: inherit;
+    }
+}

@@ -92,6 +92,8 @@ export default defineComponent({
 
         const checkByFlags = (e: NavGroup) => {
             switch (true) {
+                case e.id == 5 && (!featureFlags.notificationBroadcast || !PeerAdmin.value):
+                    return false
                 // id == 2 у настройки областей видимости
                 case (!featureFlags.visibleArea || !userRoots.value.VisionAdmin) && e.id == 2:
                     return false
@@ -108,7 +110,7 @@ export default defineComponent({
             }
         }
 
-        watch(([sections, () => props.needDefaultNav]), async () => {
+        watch(([sections, userRoots, () => props.needDefaultNav]), async () => {
             if (!sections.value.length) {
                     const res = await Api.get(`editor/get_sections_list`, null, abortController.signal)
                     useAdminData().setSections(res);
@@ -119,7 +121,7 @@ export default defineComponent({
                     title: g.title,
                     nav: [...g.nav],
                 }))
-            fullNavigation.value[0].nav.push(...sections.value);
+            fullNavigation.value.find(group => group.id === 1)?.nav.push(...sections.value);
             fullNavigation.value = fullNavigation.value.filter((e) => checkByFlags(e));
             if (!featureFlags.pointsModeration) {
                 fullNavigation.value.find(e => e.id == 3)?.nav.pop()

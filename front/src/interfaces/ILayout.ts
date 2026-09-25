@@ -20,6 +20,7 @@ export interface ISubPoint {
     name: string;
     visibility?: number;
     href?: string;
+    includeSessionId?: boolean;
     subpoints?: ISubPoint[],
     params?: {
         id: number;

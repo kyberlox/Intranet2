@@ -76,11 +76,11 @@ export const mainMenuPoints: MainMenuPoints = [
         id: 2,
         name: 'Сервисы',
         subPoints: [
-            {
-                id: 2.0,
-                name: 'Агрегатор Конфигураторов',
-                href:'argconf-auth',
-            },
+            // {
+            //     id: 2.0,
+            //     name: 'Агрегатор Конфигураторов',
+            //     href:'argconf-auth',
+            // },
             {
                 id: 2.1,
                 name: 'Подбор оборудования (ТЭП)',

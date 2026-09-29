@@ -84,7 +84,7 @@
                                    @change="handleFileSelect"
                                    class="neuroChat__file-input"
                                    accept=".pdf,.doc,.docx,.txt,.jpg,.png"
-                                   multiple />
+                                    />
                             <div class="neuroChat__add-file"
                                  @click="triggerFileSelect">
                                 <AddFileIcon />
@@ -177,13 +177,11 @@ export default defineComponent({
             const selectedFiles = target.files;
 
             if (selectedFiles?.length) {
-                for (const item of Array.from(selectedFiles)) {
-                    const file = item;
-                    filesToUpload.value.push({
-                        file: file,
-                        name: file.name
-                    });
-                }
+                const file = selectedFiles[0];
+                filesToUpload.value = [{
+                    file,
+                    name: file.name
+                }];
 
                 if (fileInputNode.value) {
                     fileInputNode.value.value = '';
@@ -231,29 +229,26 @@ export default defineComponent({
             if (chatType.value == 'textChat') {
                 if (analyzeMessage.value) {
                     const formData = new FormData();
-
-                    filesToUpload.value.forEach((fileObj) => {
-                        formData.append(`files`, fileObj.file);
-                    });
-
                     const newUserMsg = analyzeImageChatData.value[analyzeImageChatData.value.length - 1].content;
+                    const uploadedFile = filesToUpload.value[0].file;
+
+                    formData.append('file', uploadedFile);
                     formData.append('data', JSON.stringify({ prompt: newUserMsg }));
+                    formData.append('prompt', newUserMsg);
                     chatDataToSend.value.push({
                         role: 'user',
                         content: newUserMsg,
                     })
-                    formData.getAll('files').forEach((e) => {
-                        chatDataToSend.value.push({
-                            role: 'user',
-                            content: (e as File).name
-                        })
+                    chatDataToSend.value.push({
+                        role: 'user',
+                        content: uploadedFile.name
                     })
                     filesToUpload.value = [];
-                    await Api.postVendor('https://gpt.emk.ru/analyze-files', formData)
-                        .then((data) => {
+                    await Api.postVendor('https://gpt.emk.ru/analyze-file', formData)
+                        .then((data: { result: string }) => {
                             chatDataToSend.value.push({
                                 role: 'assistant',
-                                content: data.analysis
+                                content: data.result
                             })
                         })
                         .catch((error) => {

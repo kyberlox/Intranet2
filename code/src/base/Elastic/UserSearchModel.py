@@ -301,8 +301,13 @@ class UserSearchModel:
                         if param in data.keys():
                             if param == "photo_file_id":
                                 if data['photo_file_id'] is not None:
-                                    file_inf = await File(id=data['photo_file_id']).get_users_photo(session)
-                                    data_row[param] = f"{DOMAIN}{file_inf['URL']}"
+                                    try:
+                                        file_inf = await File(id=data['photo_file_id']).get_users_photo(session)
+                                        data_row[param] = f"{DOMAIN}{file_inf['URL']}"
+                                    except HTTPException:
+                                        LogsMaker().warning_message(f"Херня с фоткой у id={int(data['id'])}")
+                                        data_row[param] = HOST + '/api/user_files/no-user-photo.jpg'
+                                    
                                 else:
                                     data_row[param] = HOST + '/api/user_files/no-user-photo.jpg'
                             else:
